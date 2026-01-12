@@ -1,0 +1,104 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Connection Profiles - supports multiple database types
+model ConnectionProfile {
+  id             String   @id @default(uuid())
+  name           String   // "Local Cassandra", "Production Mongo", etc.
+  databaseType   String   // "cassandra", "mongodb", "dynamodb", etc.
+  
+  // Generic connection fields
+  host           String?
+  port           Int?
+  uri            String?  // For connection string-based DBs (MongoDB)
+  
+  // Authentication
+  username       String?
+  password       String?  // TODO: Encrypt in production
+  accessKey      String?  // For AWS services
+  secretKey      String?  // For AWS services
+  
+  // Database-specific
+  keyspace       String?  // Cassandra
+  database       String?  // MongoDB, general purpose
+  region         String?  // AWS DynamoDB
+  localDataCenter String? // Cassandra
+  
+  // Metadata
+  environment    String?  // "local", "dev", "staging", "prod"
+  description    String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  queries        SavedQuery[]
+  @@map("connection_profiles")
+}
+
+// Saved Queries - language-aware
+model SavedQuery {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  queryLanguage  String   // "cql", "mql", "partiql", "redis", etc.
+  query          String   // Query text
+  tags           String?  // JSON array: ["aggregation", "performance"]
+  
+  profileId      String?
+  profile        ConnectionProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@map("saved_queries")
+}
+
+// Query History - per connection session
+model QueryHistory {
+  id             String   @id @default(uuid())
+  connectionId   String   // Runtime connection ID (not FK)
+  databaseType   String   // For filtering/analytics
+  queryLanguage  String
+  query          String
+  
+  // Execution results
+  status         String   // "success" | "error"
+  executionTime  Int      // milliseconds
+  rowCount       Int?
+  error          String?
+  
+  createdAt      DateTime @default(now())
+  
+  @@index([connectionId, createdAt])
+  @@map("query_history")
+}
+
+// Application Configuration
+model AppConfig {
+  id    String @id @default("singleton")
+  key   String @unique
+  value String // JSON-encoded value
+  
+  @@map("app_config")
+}
+
+// Transaction Logs - audit trail
+model TransactionLog {
+  id            String   @id @default(uuid())
+  connectionId  String
+  databaseType  String
+  operation     String   // "CONNECT", "DISCONNECT", "QUERY", "MUTATION"
+  details       String?  // JSON details
+  userId        String?  // Future: RBAC user ID
+  
+  createdAt     DateTime @default(now())
+  
+  @@index([connectionId, createdAt])
+  @@map("transaction_logs")
+}
