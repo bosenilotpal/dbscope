@@ -36,9 +36,6 @@ cd dbscope
 # Install dependencies
 npm install
 
-# Initialize database
-npx prisma generate
-npx prisma db push
 
 # Start development server
 npm run dev
@@ -106,7 +103,7 @@ DBscope uses a flexible adapter architecture:
 - **UI**: ShadCN UI, Monaco Editor, TanStack Table
 - **Backend**: GraphQL Yoga, Next.js API Routes
 - **Database**: 
-  - App Data: SQLite + Prisma 5
+  - App Data: SQLite (better-sqlite3)
   - Target DBs: Cassandra Driver, MongoDB (planned), etc.
 
 ---
@@ -167,8 +164,7 @@ dbscope/
 │   └── lib/
 │       ├── adapters/      # Database adapters
 │       ├── graphql/       # GraphQL schema & resolvers
-│       └── db/            # Prisma client
-├── prisma/                # Database schema
+│       └── db/            # SQLite helper
 ├── Dockerfile             # Production Docker image
 └── docker-compose.yml     # Docker Compose config
 ```

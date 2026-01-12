@@ -1,6 +1,6 @@
 import { Client, types, auth } from 'cassandra-driver';
 import { v4 as uuidv4 } from 'uuid';
-import prisma from '@/lib/db/connection';
+import { transactionLog, queryHistory } from '@/lib/db/sqlite';
 import {
   DatabaseAdapter,
   DatabaseType,
@@ -83,14 +83,16 @@ export class CassandraAdapter implements DatabaseAdapter {
       this.connections.set(connectionId, connectionInfo);
 
       // Log connection in SQLite
-      await prisma.transactionLog.create({
-        data: {
+      try {
+        transactionLog.create({
           connectionId,
           databaseType: this.type,
           operation: 'CONNECT',
           details: JSON.stringify({ host: config.host, port: config.port, keyspace: config.keyspace })
-        }
-      }).catch(err => console.error('Failed to log connection:', err));
+        });
+      } catch (err) {
+        console.error('Failed to log connection:', err);
+      }
 
       return {
         connectionId,
@@ -114,13 +116,15 @@ export class CassandraAdapter implements DatabaseAdapter {
     this.connections.delete(connectionId);
 
     // Log disconnection
-    await prisma.transactionLog.create({
-      data: {
+    try {
+      transactionLog.create({
         connectionId,
         databaseType: this.type,
         operation: 'DISCONNECT'
-      }
-    }).catch(err => console.error('Failed to log disconnection:', err));
+      });
+    } catch (err) {
+      console.error('Failed to log disconnection:', err);
+    }
   }
 
   async testConnection(config: ConnectionConfig): Promise<TestResult> {
@@ -305,8 +309,8 @@ export class CassandraAdapter implements DatabaseAdapter {
       };
 
       // Save to query history in SQLite
-      await prisma.queryHistory.create({
-        data: {
+      try {
+        queryHistory.create({
           connectionId,
           databaseType: this.type,
           queryLanguage: this.getQueryLanguage(),
@@ -314,8 +318,10 @@ export class CassandraAdapter implements DatabaseAdapter {
           status: 'success',
           executionTime,
           rowCount: queryResult.rowCount
-        }
-      }).catch(err => console.error('Failed to save query history:', err));
+        });
+      } catch (err) {
+        console.error('Failed to save query history:', err);
+      }
 
       return queryResult;
     } catch (error) {
@@ -323,8 +329,8 @@ export class CassandraAdapter implements DatabaseAdapter {
       const errorMessage = error instanceof Error ? error.message : 'Unknown query error';
 
       // Save error to query history
-      await prisma.queryHistory.create({
-        data: {
+      try {
+        queryHistory.create({
           connectionId,
           databaseType: this.type,
           queryLanguage: this.getQueryLanguage(),
@@ -332,8 +338,10 @@ export class CassandraAdapter implements DatabaseAdapter {
           status: 'error',
           executionTime,
           error: errorMessage
-        }
-      }).catch(err => console.error('Failed to save query history:', err));
+        });
+      } catch (err) {
+        console.error('Failed to save query history:', err);
+      }
 
       return {
         success: false,

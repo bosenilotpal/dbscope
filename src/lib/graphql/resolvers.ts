@@ -1,6 +1,6 @@
 import { GraphQLScalarType, Kind } from 'graphql';
 import { adapterRegistry } from '../adapters/registry';
-import prisma from '../db/connection';
+import { queryHistory as queryHistoryDb } from '../db/sqlite';
 import { DatabaseType } from '../adapters/base/adapter.interface';
 
 // JSON scalar type for flexible data
@@ -100,21 +100,17 @@ export const resolvers = {
     },
 
     getQueryHistory: async (_: any, { connectionId }: any) => {
-      const history = await prisma.queryHistory.findMany({
-        where: { connectionId },
-        orderBy: { createdAt: 'desc' },
-        take: 100
-      });
+      const history = queryHistoryDb.getByConnection(connectionId) as any[];
 
-      return history.map(item => ({
+      return history.map((item: any) => ({
         id: item.id,
         query: item.query,
-        queryLanguage: item.queryLanguage,
+        queryLanguage: item.query_language,
         status: item.status,
-        executionTime: item.executionTime,
-        rowCount: item.rowCount,
+        executionTime: item.execution_time,
+        rowCount: item.row_count,
         error: item.error,
-        createdAt: item.createdAt.toISOString()
+        createdAt: item.created_at
       }));
     }
   },

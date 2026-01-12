@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: dbscope:latest
     ports:
       - "3847:3847"
     volumes:

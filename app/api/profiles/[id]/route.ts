@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db/connection';
+import { profiles } from '@/lib/db/sqlite';
 
 // GET /api/profiles/[id] - Get specific profile
 export async function GET(
@@ -8,9 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const profile = await prisma.connectionProfile.findUnique({
-      where: { id }
-    });
+    const profile = profiles.getById(id);
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -32,17 +30,14 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
     
-    const profile = await prisma.connectionProfile.update({
-      where: { id },
-      data: {
-        name: body.name,
-        host: body.host,
-        port: body.port,
-        username: body.username,
-        password: body.password, // TODO: Encrypt
-        keyspace: body.keyspace,
-        localDataCenter: body.localDataCenter,
-      }
+    const profile = profiles.update(id, {
+      name: body.name,
+      host: body.host,
+      port: body.port,
+      username: body.username,
+      password: body.password,
+      keyspace: body.keyspace,
+      localDataCenter: body.localDataCenter,
     });
 
     return NextResponse.json(profile);
@@ -59,9 +54,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await prisma.connectionProfile.delete({
-      where: { id }
-    });
+    profiles.delete(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

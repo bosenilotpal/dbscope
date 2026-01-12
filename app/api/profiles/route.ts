@@ -1,44 +1,36 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/db/connection';
+import { profiles } from '@/lib/db/sqlite';
 
 export async function GET() {
-  const profiles = await prisma.connectionProfile.findMany({
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      name: true,
-      databaseType: true,
-      host: true,
-      port: true,
-      environment: true,
-      createdAt: true,
-      updatedAt: true
-      // Exclude sensitive fields like password
-    }
-  });
-
-  return NextResponse.json(profiles);
+  try {
+    const allProfiles = profiles.getAll();
+    return NextResponse.json(allProfiles);
+  } catch (error) {
+    console.error('Failed to fetch profiles:', error);
+    return NextResponse.json({ error: 'Failed to fetch profiles' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  const data = await request.json();
-  
-  const profile = await prisma.connectionProfile.create({
-    data: {
-      name: data.name,
-      databaseType: data.databaseType,
-      host: data.host,
-      port: data.port,
-      username: data.username,
-      password: data.password, // TODO: Encrypt in production
-      keyspace: data.keyspace,
-      database: data.database,
-      region: data.region,
-      localDataCenter: data.localDataCenter,
-      environment: data.environment,
-      description: data.description
-    }
-  });
+  try {
+    const body = await request.json();
+    
+    const profile = profiles.create({
+      name: body.name,
+      databaseType: body.databaseType,
+      host: body.host,
+      port: body.port,
+      username: body.username,
+      password: body.password, // TODO: Encrypt
+      keyspace: body.keyspace,
+      database: body.database,
+      localDataCenter: body.localDataCenter,
+      description: body.description
+    });
 
-  return NextResponse.json(profile);
+    return NextResponse.json(profile, { status: 201 });
+  } catch (error) {
+    console.error('Failed to create profile:', error);
+    return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 });
+  }
 }

@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/db/connection';
 
 export async function GET() {
   try {
-    // Check database connection
-    await prisma.$queryRaw`SELECT 1`;
-    
     return NextResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      database: 'connected',
       service: 'DBscope'
     });
   } catch (error) {
