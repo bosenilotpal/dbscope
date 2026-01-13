@@ -2,18 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container } from 'lucide-react';
+import { Container, AlertCircle, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface ConnectionFormProps {
   databaseType: string;
   profile?: any; // Pre-fill from selected profile
+  onProfileSaved?: () => void;
+  autoConnect?: boolean;
 }
 
-export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
+export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConnect }: ConnectionFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string; executionTime: number } | null>(null);
   const [saveProfile, setSaveProfile] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [profileName, setProfileName] = useState('');
   const [isDockerized, setIsDockerized] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,8 +43,21 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
         localDataCenter: profile.local_data_center || 'datacenter1'
       });
       setProfileName(profile.name || '');
+      setSaveProfile(false); // Only check if user wants to explicitly update
+      setIsDockerized(profile.host === 'host.docker.internal');
     }
   }, [profile, databaseType]);
+
+  // Handle auto-connect
+  useEffect(() => {
+    if (autoConnect && !loading) {
+      const timer = setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) form.requestSubmit();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [autoConnect, loading]);
 
   // Update host when Docker toggle changes
   useEffect(() => {
@@ -77,7 +96,7 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
 
       if (result.errors) {
         const errorMsg = result.errors[0].message;
-        
+
         // Parse common error types
         if (errorMsg.includes('timeout') || errorMsg.includes('did not reply')) {
           throw new Error('Connection timeout. Please check if the database is running and the host/port are correct.');
@@ -92,7 +111,7 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
 
       if (result.data.connect.status === 'connected') {
         const connectionId = result.data.connect.connectionId;
-        
+
         // Update last_used_at if using an existing profile
         if (profile?.id) {
           try {
@@ -101,12 +120,16 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
             console.error('Failed to update last used:', err);
           }
         }
-        
-        // Save profile if requested
+
+        // Save or Update profile if requested
         if (saveProfile && profileName.trim()) {
           try {
-            await fetch('/api/profiles', {
-              method: 'POST',
+            const isUpdate = !!profile?.id;
+            const endpoint = isUpdate ? `/api/profiles/${profile.id}` : '/api/profiles';
+            const method = isUpdate ? 'PUT' : 'POST';
+
+            await fetch(endpoint, {
+              method,
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 name: profileName.trim(),
@@ -115,10 +138,13 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
               })
             });
           } catch (err) {
-            console.error('Failed to save profile:', err);
+            console.error('Failed to save/update profile:', err);
           }
         }
-        
+
+        // Notify parent that profile might have changed/newly created
+        onProfileSaved?.();
+
         // Store connection ID and redirect to viewer
         sessionStorage.setItem('connectionId', connectionId);
         sessionStorage.setItem('databaseType', databaseType);
@@ -133,157 +159,291 @@ export function ConnectionForm({ databaseType, profile }: ConnectionFormProps) {
     }
   };
 
+  const handleSave = async () => {
+    if (!profileName.trim()) {
+      setError('Profile name is required');
+      return;
+    }
+    if (!profile?.id) return;
+
+    setSaveLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/profiles/${profile.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profileName.trim(),
+          databaseType: databaseType,
+          ...formData
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+
+      onProfileSaved?.();
+    } catch (err: any) {
+      setError(err.message || 'Failed to save profile changes');
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTestLoading(true);
+    setError(null);
+    setTestResult(null);
+
+    try {
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: `
+            query TestConnection($type: DatabaseType!, $input: ConnectionInput!) {
+              testConnection(type: $type, input: $input) {
+                success
+                status
+                message
+                execution_time
+              }
+            }
+          `,
+          variables: {
+            type: databaseType.toUpperCase(),
+            input: formData
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.errors) {
+        const errorMsg = result.errors[0].message;
+
+        // Parse common error types
+        if (errorMsg.includes('timeout') || errorMsg.includes('did not reply')) {
+          throw new Error('Connection timeout. Please check if the database is running and the host/port are correct.');
+        } else if (errorMsg.includes('Connection refused')) {
+          throw new Error('Connection refused. The database might not be running on the specified host:port.');
+        } else if (errorMsg.includes('authentication') || errorMsg.includes('credentials')) {
+          throw new Error('Authentication failed. Please check your username and password.');
+        } else {
+          throw new Error(errorMsg);
+        }
+      }
+
+      const testData = result.data.testConnection;
+      setTestResult({
+        success: testData.success,
+        message: testData.message,
+        executionTime: testData.execution_time
+      });
+
+      if (!testData.success) {
+        setError(testData.message);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to test connection');
+      setTestResult({
+        success: false,
+        message: err.message || 'Failed to test connection',
+        executionTime: 0
+      });
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-4">
-          {databaseType === 'cassandra' ? 'Cassandra' : databaseType} Connection
-        </h3>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mb-1">
+        {profile && (
+          <div className="mb-3">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-0.5">Profile Name</label>
+            <input
+              type="text"
+              value={profileName}
+              onChange={(e) => setProfileName(e.target.value)}
+              placeholder="e.g., Production"
+              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+              required
+            />
+          </div>
+        )}
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Connection Failed</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {testResult && testResult.success && (
+        <Alert variant="success">
+          <CheckCircle className="h-4 w-4" />
+          <AlertTitle className="text-slate-900">Connection Successful</AlertTitle>
+          <AlertDescription className="text-slate-600">
+            {testResult.message}
+            <div className="text-xs mt-1 text-slate-500">
+              Response time: {testResult.executionTime}ms
+            </div>
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* Docker Toggle */}
-      <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <Container className="h-5 w-5 text-blue-600" />
+      <div className="flex items-center gap-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+        <Container className="h-4 w-4 text-blue-600" />
         <label className="flex flex-1 items-center justify-between cursor-pointer">
           <div>
-            <div className="text-sm font-medium text-slate-900">Dockerized Database</div>
-            <div className="text-xs text-slate-600 mt-0.5">Auto-configure for Docker networking</div>
+            <div className="text-sm font-semibold text-slate-900">Dockerized Database</div>
+            <div className="text-xs text-slate-500 mt-0.5">Auto-configure for Docker networking</div>
           </div>
-          <div className="relative inline-block w-11 h-6">
+          <div className="relative inline-block w-9 h-5">
             <input
               type="checkbox"
               checked={isDockerized}
               onChange={(e) => setIsDockerized(e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
           </div>
         </label>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-x-4 gap-y-3 md:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium mb-2">Host</label>
+          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Host</label>
           <input
             type="text"
             value={formData.host}
             onChange={(e) => setFormData({ ...formData, host: e.target.value })}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             disabled={isDockerized}
             required
           />
-          {isDockerized && (
-            <p className="mt-1 text-xs text-blue-600">Using host.docker.internal for Docker networking</p>
-          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Port</label>
+          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Port</label>
           <input
             type="number"
-            value={formData.port}
-            onChange={(e) => setFormData({ ...formData, port: parseInt(e.target.value) })}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={formData.port || ''}
+            onChange={(e) => {
+              const value = e.target.value === '' ? '' : parseInt(e.target.value);
+              setFormData({ ...formData, port: value === '' ? (databaseType === 'cassandra' || databaseType === 'scylladb' ? 9042 : 27017) : value });
+            }}
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Username</label>
+          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Username</label>
           <input
             type="text"
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Password</label>
+          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Password</label>
           <input
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
 
         {(databaseType === 'cassandra' || databaseType === 'scylladb') && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Keyspace (optional)</label>
+              <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Keyspace</label>
               <input
                 type="text"
                 value={formData.keyspace}
                 onChange={(e) => setFormData({ ...formData, keyspace: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Local Data Center</label>
+              <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Data Center</label>
               <input
                 type="text"
                 value={formData.localDataCenter}
                 onChange={(e) => setFormData({ ...formData, localDataCenter: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
           </>
         )}
       </div>
 
-      <div className="border-t pt-4 mt-2">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={saveProfile}
-            onChange={(e) => setSaveProfile(e.target.checked)}
-            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-          />
-          <span className="text-sm font-medium">Save this connection profile</span>
-        </label>
-        
-        {saveProfile && (
-          <div className="mt-3">
-            <label className="block text-sm font-medium mb-2">Profile Name</label>
+      {!profile && (
+        <div className="pt-2">
+          <label className="flex items-center gap-2 cursor-pointer group">
             <input
-              type="text"
-              value={profileName}
-              onChange={(e) => setProfileName(e.target.value)}
-              placeholder="e.g., Production Cassandra"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required={saveProfile}
+              type="checkbox"
+              checked={saveProfile}
+              onChange={(e) => setSaveProfile(e.target.checked)}
+              className="w-3.5 h-3.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-        )}
-      </div>
+            <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">Save profile</span>
+          </label>
 
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {loading ? 'Connecting...' : 'Connect'}
-        </button>
+          {saveProfile && (
+            <div className="mt-2 pl-5">
+              <input
+                type="text"
+                value={profileName}
+                onChange={(e) => setProfileName(e.target.value)}
+                placeholder="Profile Name..."
+                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                required={saveProfile}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
+      <div className="flex items-center gap-3 pt-5 border-t">
         <button
           type="button"
-          onClick={() => {
-            // Test connection without saving
-            setError(null);
-            alert('Test connection feature coming soon');
-          }}
-          className="px-6 py-2 border border-slate-300 rounded-lg font-medium hover:bg-slate-50 transition"
+          onClick={handleTestConnection}
+          disabled={testLoading || loading || saveLoading}
+          className="px-5 py-2.5 border border-slate-300 rounded-lg font-bold text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
-          Test Connection
+          {testLoading ? 'Testing...' : 'Test Connection'}
+        </button>
+
+        <div className="flex-1" />
+
+        {profile && (
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saveLoading || loading}
+            className="px-5 py-2.5 bg-white border border-blue-600 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            {saveLoading ? 'Saving...' : 'Save Changes'}
+          </button>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading || saveLoading}
+          className="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg shadow-blue-600/20"
+        >
+          {loading ? 'Connecting...' : 'Connect'}
         </button>
       </div>
     </form>

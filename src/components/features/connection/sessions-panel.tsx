@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Pin, Clock, Star } from 'lucide-react';
+import { Pin, Clock, Star, Trash2, Database, Play, ExternalLink } from 'lucide-react';
 
 interface ConnectionProfile {
   id: string;
@@ -16,9 +16,11 @@ interface ConnectionProfile {
 
 interface SessionsPanelProps {
   onSelectProfile: (profile: ConnectionProfile) => void;
+  onQuickConnect: (profile: ConnectionProfile) => void;
+  selectedProfileId?: string;
 }
 
-export function SessionsPanel({ onSelectProfile }: SessionsPanelProps) {
+export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfileId }: SessionsPanelProps) {
   const [profiles, setProfiles] = useState<ConnectionProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,8 +50,84 @@ export function SessionsPanel({ onSelectProfile }: SessionsPanelProps) {
     }
   };
 
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this profile?')) return;
+
+    try {
+      await fetch(`/api/profiles/${id}`, { method: 'DELETE' });
+      fetchProfiles();
+    } catch (error) {
+      console.error('Failed to delete profile:', error);
+    }
+  };
+
   const pinnedProfiles = profiles.filter((p) => p.is_pinned);
-  const recentProfiles = profiles.filter((p) => !p.is_pinned && p.last_used_at).slice(0, 5);
+  const otherProfiles = profiles.filter((p) => !p.is_pinned);
+
+  const ProfileCard = ({ profile }: { profile: ConnectionProfile }) => {
+    const isSelected = selectedProfileId === profile.id;
+
+    return (
+      <div
+        className={`group relative w-full rounded-lg border p-4 transition-all ${isSelected
+            ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+            : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-md'
+          }`}
+      >
+        <div className="flex items-start justify-between">
+          <button
+            onClick={() => onSelectProfile(profile)}
+            className="flex-1 text-left"
+          >
+            <div className="flex items-center gap-2">
+              <div className={`font-medium ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
+                {profile.name}
+              </div>
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${isSelected ? 'bg-blue-200 text-blue-800' : 'bg-slate-100 text-slate-600'
+                }`}>
+                {profile.database_type}
+              </span>
+            </div>
+            <div className={`mt-1 text-sm ${isSelected ? 'text-blue-700' : 'text-slate-600'}`}>
+              {profile.host}:{profile.port}
+            </div>
+          </button>
+
+          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <button
+              onClick={() => onQuickConnect(profile)}
+              title="Quick Connect"
+              className="rounded p-1.5 text-blue-600 transition-colors hover:bg-blue-100"
+            >
+              <Play className="h-4 w-4 fill-current" />
+            </button>
+            <button
+              onClick={() => onSelectProfile(profile)}
+              title="Edit Profile"
+              className="rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </button>
+            <button
+              onClick={(e) => handleTogglePin(profile.id, e)}
+              title={profile.is_pinned ? "Unpin" : "Pin"}
+              className="rounded p-1.5 transition-colors hover:bg-slate-100"
+            >
+              <Pin className={`h-4 w-4 ${profile.is_pinned ? 'fill-yellow-500 text-yellow-500' : 'text-slate-300 hover:text-yellow-500'}`} />
+            </button>
+            <button
+              onClick={(e) => handleDelete(profile.id, e)}
+              title="Delete Profile"
+              className="rounded p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -76,70 +154,22 @@ export function SessionsPanel({ onSelectProfile }: SessionsPanelProps) {
           </div>
           <div className="space-y-2">
             {pinnedProfiles.map((profile) => (
-              <button
-                key={profile.id}
-                onClick={() => onSelectProfile(profile)}
-                className="group relative w-full rounded-lg border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 text-left transition-all hover:border-blue-300 hover:shadow-md"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium text-slate-900">{profile.name}</div>
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                        {profile.database_type}
-                      </span>
-                    </div>
-                    <div className="mt-1 text-sm text-slate-600">
-                      {profile.host}:{profile.port}
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => handleTogglePin(profile.id, e)}
-                    className="rounded p-1.5 transition-colors hover:bg-slate-100"
-                  >
-                    <Pin className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                  </button>
-                </div>
-              </button>
+              <ProfileCard key={profile.id} profile={profile} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Recent Sessions */}
-      {recentProfiles.length > 0 && (
+      {/* Saved Connections */}
+      {otherProfiles.length > 0 && (
         <div className="p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Clock className="h-5 w-5 text-slate-400" />
-            <h3 className="font-semibold text-slate-900">Recent</h3>
+            <Database className="h-5 w-5 text-slate-400" />
+            <h3 className="font-semibold text-slate-900">Saved Connections</h3>
           </div>
           <div className="space-y-2">
-            {recentProfiles.map((profile) => (
-              <button
-                key={profile.id}
-                onClick={() => onSelectProfile(profile)}
-                className="group relative w-full rounded-lg border border-slate-200 bg-white p-4 text-left transition-all hover:border-blue-200 hover:bg-slate-50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium text-slate-900">{profile.name}</div>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-                        {profile.database_type}
-                      </span>
-                    </div>
-                    <div className="mt-1 text-sm text-slate-600">
-                      {profile.host}:{profile.port}
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => handleTogglePin(profile.id, e)}
-                    className="rounded p-1.5 transition-colors hover:bg-slate-100"
-                  >
-                    <Pin className="h-4 w-4 text-slate-300 hover:text-yellow-500" />
-                  </button>
-                </div>
-              </button>
+            {otherProfiles.map((profile) => (
+              <ProfileCard key={profile.id} profile={profile} />
             ))}
           </div>
         </div>
