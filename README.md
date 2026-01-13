@@ -26,7 +26,7 @@ Get up and running in seconds:
 
 ```bash
 # Pull and run the latest image
-docker run -d -p 3847:3847 -v dbscope-data:/app/data dbscope:latest
+docker run -d -p 3847:3847 -v dbscope-data:/app/data dbscope/app:latest
 
 # Access at http://localhost:3847
 ```
@@ -37,7 +37,7 @@ docker run -d -p 3847:3847 -v dbscope-data:/app/data dbscope:latest
 version: '3.8'
 services:
   dbscope:
-    image: dbscope:latest
+    image: dbscope/app:latest
     ports:
       - "3847:3847"
     volumes:

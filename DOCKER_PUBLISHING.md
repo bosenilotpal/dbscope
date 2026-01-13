@@ -5,7 +5,7 @@
 ### 1. Build the Image
 
 ```bash
-docker build -t dbscope:latest .
+docker build -t dbscope/app:latest .
 ```
 
 ### 2. Tag for Version & Publishing
@@ -14,8 +14,8 @@ To publish to Docker Hub, you must tag it with your username:
 
 ```bash
 # Tag for Hub
-docker tag dbscope:latest yourusername/dbscope:latest
-docker tag dbscope:latest yourusername/dbscope:1.0.0
+docker tag dbscope/app:latest dbscope/app:latest
+docker tag dbscope/app:latest dbscope/app:1.0.0
 ```
 
 ### 3. Push to Docker Hub
@@ -25,8 +25,8 @@ docker tag dbscope:latest yourusername/dbscope:1.0.0
 docker login
 
 # Push
-docker push yourusername/dbscope:latest
-docker push yourusername/dbscope:1.0.0
+docker push dbscope/app:latest
+docker push dbscope/app:1.0.0
 ```
 
 ---
@@ -40,7 +40,7 @@ docker run -d \
   -p 3847:3847 \
   -v dbscope-data:/app/data \
   --name dbscope \
-  dbscope:latest
+  dbscope/app:latest
 ```
 
 ### Using Docker Compose

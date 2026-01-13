@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Database,
@@ -14,12 +14,48 @@ import {
   Container,
   Pin,
   Clock,
-  Layers
+  Layers,
+  Users
 } from 'lucide-react';
+
+interface Contributor {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+}
 
 export default function HomePage() {
   const [copied, setCopied] = useState(false);
-  const dockerCommand = 'docker run -d -p 3847:3847 -v dbscope-data:/app/data dbscope:latest';
+  const [contributors, setContributors] = useState<Contributor[]>([
+    {
+      login: 'bosenilotpal',
+      avatar_url: 'https://github.com/bosenilotpal.png',
+      html_url: 'https://github.com/bosenilotpal'
+    },
+    {
+      login: 'sayak-dutta',
+      avatar_url: 'https://github.com/sayak-dutta.png',
+      html_url: 'https://github.com/sayak-dutta'
+    }
+  ]);
+
+  useEffect(() => {
+    // Attempt to fetch fresh data, but fallback to hardcoded if private/fails
+    fetch('https://api.github.com/repos/bosenilotpal/dbscope/contributors')
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error('Repo not public or not found');
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setContributors(data);
+        }
+      })
+      .catch((err) => {
+        console.log('Using fallback contributors:', err.message);
+      });
+  }, []);
+  const dockerCommand = 'docker run -d -p 3847:3847 -v dbscope-data:/app/data dbscope/app:latest';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(dockerCommand);
@@ -232,6 +268,52 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Contributors Section */}
+      <section className="border-t bg-slate-50 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <div className="mb-8">
+            <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-100 p-3">
+              <Users className="h-6 w-6 text-blue-600" />
+            </div>
+            <h3 className="mb-3 text-2xl font-bold text-slate-900">
+              Community Contributors
+            </h3>
+            <p className="mx-auto max-w-2xl text-slate-600">
+              Join our growing community of developers building the future of database management.
+            </p>
+          </div>
+
+          <div className="mb-8 flex flex-wrap justify-center gap-4">
+            {contributors.map((contributor) => (
+              <a
+                key={contributor.login}
+                href={contributor.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative"
+                title={contributor.login}
+              >
+                <img
+                  src={contributor.avatar_url}
+                  alt={contributor.login}
+                  className="h-12 w-12 rounded-full border-2 border-white shadow-sm transition group-hover:scale-110 group-hover:border-blue-400"
+                />
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="https://github.com/bosenilotpal/dbscope"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+          >
+            <Github className="h-4 w-4" />
+            Become a Contributor
+          </a>
         </div>
       </section>
 
