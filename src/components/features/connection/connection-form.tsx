@@ -318,7 +318,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
 
       <div className="grid gap-x-4 gap-y-3 md:grid-cols-2">
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1 ml-0.5">Host</label>
+          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Host</label>
           <input
             type="text"
             value={formData.host}
