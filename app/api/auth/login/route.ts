@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { verifyCredentials, createSession } from '@/lib/auth/session';
 
+export async function GET() {
+    return NextResponse.json({ message: 'Login endpoint active. Use POST for authentication.' });
+}
+
 export async function POST(request: Request) {
     try {
         const { username, password } = await request.json();

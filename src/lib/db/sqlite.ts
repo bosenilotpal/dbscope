@@ -2,17 +2,41 @@ import Database from 'better-sqlite3';
 import path from 'path';
 
 // Database file location (supports Docker volume mount)
-const dbPath = process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'dbscope.db');
+const isVercel = process.env.VERCEL === '1';
+const dbPath = process.env.DATABASE_PATH || (isVercel
+  ? path.join('/tmp', 'dbscope.db')
+  : path.join(process.cwd(), 'data', 'dbscope.db'));
 
 // Ensure data directory exists
 import fs from 'fs';
 const dataDir = path.dirname(dbPath);
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+
+try {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Could not create data directory, might be in a read-only environment:', e);
 }
 
 // Initialize database connection
-const db = new Database(dbPath);
+let db: any;
+try {
+  db = new Database(dbPath);
+} catch (e) {
+  console.error('Failed to initialize database:', e);
+  // Fallback or mock if needed, but for now we let it fail gracefully
+  // or provide a minimal interface to avoid crashes
+  db = {
+    prepare: () => ({
+      all: () => [],
+      get: () => null,
+      run: () => ({ changes: 0, lastInsertRowid: 0 })
+    }),
+    exec: () => { },
+    pragma: () => { }
+  } as any;
+}
 
 // Enable WAL mode for better concurrent access
 db.pragma('journal_mode = WAL');
