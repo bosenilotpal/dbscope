@@ -19,6 +19,16 @@ db.pragma('journal_mode = WAL');
 
 // Create tables if they don't exist
 db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    email TEXT,
+    is_active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS connection_profiles (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -61,6 +71,7 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_query_history_connection ON query_history(connection_id);
   CREATE INDEX IF NOT EXISTS idx_transaction_log_connection ON transaction_log(connection_id);
+  CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 `);
 
 // Helper functions
@@ -71,9 +82,9 @@ export function generateId(): string {
 // Connection Profiles
 export const profiles = {
   getAll: () => db.prepare('SELECT * FROM connection_profiles ORDER BY is_pinned DESC, last_used_at DESC, created_at DESC').all(),
-  
+
   getById: (id: string) => db.prepare('SELECT * FROM connection_profiles WHERE id = ?').get(id),
-  
+
   create: (profile: {
     name: string;
     databaseType: string;
@@ -93,7 +104,7 @@ export const profiles = {
     `).run(id, profile.name, profile.databaseType, profile.host, profile.port, profile.username, profile.password, profile.keyspace, profile.database, profile.localDataCenter, profile.description);
     return { id, ...profile };
   },
-  
+
   update: (id: string, profile: Partial<{
     name: string;
     host: string;
@@ -105,7 +116,7 @@ export const profiles = {
   }>) => {
     const sets: string[] = [];
     const values: any[] = [];
-    
+
     if (profile.name !== undefined) { sets.push('name = ?'); values.push(profile.name); }
     if (profile.host !== undefined) { sets.push('host = ?'); values.push(profile.host); }
     if (profile.port !== undefined) { sets.push('port = ?'); values.push(profile.port); }
@@ -113,19 +124,19 @@ export const profiles = {
     if (profile.password !== undefined) { sets.push('password = ?'); values.push(profile.password); }
     if (profile.keyspace !== undefined) { sets.push('keyspace = ?'); values.push(profile.keyspace); }
     if (profile.localDataCenter !== undefined) { sets.push('local_data_center = ?'); values.push(profile.localDataCenter); }
-    
+
     sets.push("updated_at = datetime('now')");
     values.push(id);
-    
+
     db.prepare(`UPDATE connection_profiles SET ${sets.join(', ')} WHERE id = ?`).run(...values);
     return profiles.getById(id);
   },
-  
+
   delete: (id: string) => {
     db.prepare('DELETE FROM connection_profiles WHERE id = ?').run(id);
     return { success: true };
   },
-  
+
   togglePin: (id: string) => {
     const profile = profiles.getById(id) as any;
     if (!profile) throw new Error('Profile not found');
@@ -133,7 +144,7 @@ export const profiles = {
     db.prepare('UPDATE connection_profiles SET is_pinned = ?, updated_at = datetime(\'now\') WHERE id = ?').run(newPinned, id);
     return profiles.getById(id);
   },
-  
+
   updateLastUsed: (id: string) => {
     db.prepare('UPDATE connection_profiles SET last_used_at = datetime(\'now\'), updated_at = datetime(\'now\') WHERE id = ?').run(id);
     return profiles.getById(id);
@@ -142,9 +153,9 @@ export const profiles = {
 
 // Query History
 export const queryHistory = {
-  getByConnection: (connectionId: string, limit = 100) => 
+  getByConnection: (connectionId: string, limit = 100) =>
     db.prepare('SELECT * FROM query_history WHERE connection_id = ? ORDER BY created_at DESC LIMIT ?').all(connectionId, limit),
-  
+
   create: (entry: {
     connectionId: string;
     databaseType: string;
@@ -179,9 +190,41 @@ export const transactionLog = {
     `).run(id, entry.connectionId, entry.databaseType, entry.operation, entry.details);
     return { id, ...entry };
   },
-  
+
   getByConnection: (connectionId: string) =>
     db.prepare('SELECT * FROM transaction_log WHERE connection_id = ? ORDER BY created_at DESC').all(connectionId)
+};
+
+// Users
+export const users = {
+  getAll: () => db.prepare('SELECT id, username, email, is_active, created_at FROM users').all(),
+
+  getByUsername: (username: string) => db.prepare('SELECT * FROM users WHERE username = ?').get(username),
+
+  getById: (id: string) => db.prepare('SELECT id, username, email, is_active, created_at FROM users WHERE id = ?').get(id),
+
+  create: (user: {
+    username: string;
+    passwordHash: string;
+    email?: string;
+  }) => {
+    const id = generateId();
+    db.prepare(`
+      INSERT INTO users (id, username, password_hash, email)
+      VALUES (?, ?, ?, ?)
+    `).run(id, user.username, user.passwordHash, user.email);
+    return { id, username: user.username, email: user.email };
+  },
+
+  updatePassword: (id: string, passwordHash: string) => {
+    db.prepare(`UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?`).run(passwordHash, id);
+    return users.getById(id);
+  },
+
+  delete: (id: string) => {
+    db.prepare('DELETE FROM users WHERE id = ?').run(id);
+    return { success: true };
+  }
 };
 
 export default db;

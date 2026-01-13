@@ -45,15 +45,19 @@ export class CassandraAdapter implements DatabaseAdapter {
   // Connection Management
   async connect(config: ConnectionConfig): Promise<ConnectionResult> {
     const startTime = Date.now();
-    
+
     try {
-      const contactPoints = [`${config.host}:${config.port}`];
+      // Force IPv4 by replacing localhost with 127.0.0.1
+      const host = config.host === 'localhost' ? '127.0.0.1' : config.host;
+      const contactPoints = [`${host}:${config.port}`];
+
       const clientOptions: any = {
         contactPoints,
         localDataCenter: config.localDataCenter || 'datacenter1',
         socketOptions: {
           connectTimeout: 10000,
           readTimeout: 10000,
+          keepAlive: true,
         },
       };
 
@@ -129,11 +133,11 @@ export class CassandraAdapter implements DatabaseAdapter {
 
   async testConnection(config: ConnectionConfig): Promise<TestResult> {
     const startTime = Date.now();
-    
+
     try {
       const { connectionId } = await this.connect(config);
       await this.disconnect(connectionId);
-      
+
       return {
         success: true,
         status: 'success',
@@ -154,7 +158,7 @@ export class CassandraAdapter implements DatabaseAdapter {
   // Schema Operations
   async listDatabases(connectionId: string): Promise<DatabaseInfo[]> {
     const connection = this.getConnection(connectionId);
-    
+
     try {
       const query = `SELECT keyspace_name FROM system_schema.keyspaces`;
       const result = await connection.client.execute(query);
@@ -164,7 +168,7 @@ export class CassandraAdapter implements DatabaseAdapter {
 
       for (const row of result.rows) {
         const keyspaceName = row.keyspace_name;
-        
+
         if (systemKeyspaces.includes(keyspaceName)) {
           continue;
         }

@@ -16,6 +16,7 @@ import {
   Clock,
   Layers
 } from 'lucide-react';
+import { UserProfile } from '@/components/ui/user-profile';
 
 export default function HomePage() {
   const [copied, setCopied] = useState(false);
@@ -99,10 +100,11 @@ export default function HomePage() {
             </a>
             <Link
               href="/connect"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 shadow-md shadow-blue-600/20"
             >
               Get Started
             </Link>
+            <UserProfile />
           </nav>
         </div>
       </header>
