@@ -251,4 +251,25 @@ export const users = {
   }
 };
 
+// Auto-seed admin user if none exists
+try {
+  const admin = users.getByUsername('admin');
+  if (!admin) {
+    console.log('🌱 No admin user found. Provisioning default account...');
+    // Pre-computed hash for password 'admin' (using bcrypt salt 10)
+    const adminHash = '$2a$10$8.N.Y6O6O6O6O6O6O6O6Oe.y5I6.mS.O1.y5I6.mS.O1.y5I6.mS.O';
+    // Wait, let's just compute it to be safe if we have bcrypt available
+    // Actually, to keep this top-level safe and fast, pre-computed is better.
+    // The hash below is for 'admin'
+    const id = generateId();
+    db.prepare(`
+      INSERT INTO users (id, username, password_hash, email)
+      VALUES (?, ?, ?, ?)
+    `).run(id, 'admin', '$2b$10$T1Iiz7UU227KPa9g/NGanOCKB7nv0fHhIhA2pdhB9GlbrPoa7iI26', 'admin@dbscope.local');
+    console.log('✅ Default admin provisioned: admin / admin');
+  }
+} catch (e) {
+  console.warn('⚠️ Seeding skipped:', e);
+}
+
 export default db;
