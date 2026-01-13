@@ -76,8 +76,24 @@ export const adapterRegistry = new AdapterRegistry();
 // Auto-register adapters on import
 import { CassandraAdapter } from './cassandra/adapter';
 
-// Register available adapters
-adapterRegistry.register(new CassandraAdapter());
+// Register Apache Cassandra
+const cassandraAdapter = new CassandraAdapter();
+adapterRegistry.register(cassandraAdapter);
+
+// ScyllaDB is wire-compatible with Cassandra
+// We create a wrapper adapter that uses Cassandra's implementation but presents as ScyllaDB
+const createScyllaDBAdapter = (): DatabaseAdapter => {
+  const baseAdapter = new CassandraAdapter();
+  
+  return {
+    ...baseAdapter,
+    type: DatabaseType.SCYLLADB,
+    displayName: 'ScyllaDB',
+    icon: '⚡',
+  } as DatabaseAdapter;
+};
+
+adapterRegistry.register(createScyllaDBAdapter());
 
 // Future: Add more adapters as they're implemented
 // adapterRegistry.register(new MongoDBAdapter());

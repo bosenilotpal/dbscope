@@ -31,6 +31,8 @@ db.exec(`
     database TEXT,
     local_data_center TEXT,
     description TEXT,
+    is_pinned INTEGER DEFAULT 0,
+    last_used_at TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
   );
@@ -68,7 +70,7 @@ export function generateId(): string {
 
 // Connection Profiles
 export const profiles = {
-  getAll: () => db.prepare('SELECT * FROM connection_profiles ORDER BY created_at DESC').all(),
+  getAll: () => db.prepare('SELECT * FROM connection_profiles ORDER BY is_pinned DESC, last_used_at DESC, created_at DESC').all(),
   
   getById: (id: string) => db.prepare('SELECT * FROM connection_profiles WHERE id = ?').get(id),
   
@@ -122,6 +124,19 @@ export const profiles = {
   delete: (id: string) => {
     db.prepare('DELETE FROM connection_profiles WHERE id = ?').run(id);
     return { success: true };
+  },
+  
+  togglePin: (id: string) => {
+    const profile = profiles.getById(id) as any;
+    if (!profile) throw new Error('Profile not found');
+    const newPinned = profile.is_pinned ? 0 : 1;
+    db.prepare('UPDATE connection_profiles SET is_pinned = ?, updated_at = datetime(\'now\') WHERE id = ?').run(newPinned, id);
+    return profiles.getById(id);
+  },
+  
+  updateLastUsed: (id: string) => {
+    db.prepare('UPDATE connection_profiles SET last_used_at = datetime(\'now\'), updated_at = datetime(\'now\') WHERE id = ?').run(id);
+    return profiles.getById(id);
   }
 };
 
