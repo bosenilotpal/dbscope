@@ -48,50 +48,30 @@ export function DatabaseSelector({ onSelect }: DatabaseSelectorProps) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Select Database Type</h3>
-        <p className="text-sm text-gray-600">Choose the database you want to connect to</p>
-      </div>
-      
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {databases.map(db => (
           <button
             key={db.type}
             onClick={() => onSelect(db.type)}
-            className="p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition text-left group"
+            className="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-md transition text-left group"
           >
-            <div className="flex items-start gap-4">
-              <div className="text-4xl">{db.icon}</div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-lg mb-1 group-hover:text-blue-600 transition">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl grayscale group-hover:grayscale-0 transition-all">{db.icon}</div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-base text-slate-900 group-hover:text-blue-600 transition truncate">
                   {db.displayName}
                 </h4>
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {db.capabilities.supportsAggregation && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                      Aggregation
-                    </span>
-                  )}
-                  {db.capabilities.supportsIndexes && (
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
-                      Indexes
-                    </span>
-                  )}
-                  {db.capabilities.supportsTransactions && (
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-                      Transactions
-                    </span>
-                  )}
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                    {db.capabilities.queryLanguage}
+                  </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 code-font">
-                  {db.capabilities.queryLanguage.toUpperCase()}
-                </p>
               </div>
             </div>
           </button>
         ))}
       </div>
-      
+
       {databases.length === 0 && (
         <div className="text-center py-12 text-gray-500">
           <Database className="w-12 h-12 mx-auto mb-3 opacity-50" />

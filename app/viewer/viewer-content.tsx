@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Database, ArrowLeft, Code } from 'lucide-react';
 import Link from 'next/link';
+import { UserProfile } from '@/components/ui/user-profile';
 import { SchemaTree } from '@/components/features/schema-explorer/schema-tree';
 import { QueryEditor } from '@/components/features/query-editor/query-editor';
 import { ResultsTable } from '@/components/features/query-editor/results-table';
@@ -70,7 +71,7 @@ export default function ViewerContent() {
 
       if (result.data?.executeQuery) {
         const queryResult = result.data.executeQuery;
-        
+
         if (!queryResult.success) {
           setError(queryResult.error || 'Query failed');
           setQueryResults(null);
@@ -98,10 +99,12 @@ export default function ViewerContent() {
               DBscope
             </span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <span className="text-xs text-slate-500 code-font bg-slate-100 px-3 py-1.5 rounded-full">
               {connectionId.substring(0, 8)}...
             </span>
+            <div className="h-6 w-px bg-slate-200" />
+            <UserProfile />
           </div>
         </div>
       </header>

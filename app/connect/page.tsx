@@ -4,22 +4,51 @@ import { useState } from 'react';
 import { DatabaseSelector } from '@/components/features/connection/database-selector';
 import { ConnectionForm } from '@/components/features/connection/connection-form';
 import { SessionsPanel } from '@/components/features/connection/sessions-panel';
-import { Database, ArrowLeft } from 'lucide-react';
+import { Database, ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { UserProfile } from '@/components/ui/user-profile';
+import { Modal } from '@/components/ui/modal';
 
 export default function ConnectPage() {
   const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [autoConnect, setAutoConnect] = useState(false);
+
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleProfileSelect = (profile: any) => {
     setSelectedDatabase(profile.database_type);
     setSelectedProfile(profile);
+    setAutoConnect(false);
+    setIsFormOpen(true);
+  };
+
+  const handleQuickConnect = (profile: any) => {
+    setSelectedDatabase(profile.database_type);
+    setSelectedProfile(profile);
+    setAutoConnect(true);
+    setIsFormOpen(true);
+  };
+
+  const handleDatabaseSelect = (type: string) => {
+    setSelectedDatabase(type);
+    setSelectedProfile(null);
+    setAutoConnect(false);
+    setIsSelectorOpen(false);
+    setIsFormOpen(true);
+  };
+
+  const handleProfileSaved = () => {
+    setRefreshKey(prev => prev + 1);
+    setIsFormOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <ArrowLeft className="h-5 w-5" />
@@ -28,54 +57,102 @@ export default function ConnectPage() {
               DBscope
             </span>
           </Link>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSelectorOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 shadow-md shadow-blue-600/20"
+            >
+              <Plus className="h-4 w-4" />
+              New Connection
+            </button>
+            <div className="h-6 w-px bg-slate-200" />
+            <UserProfile />
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8">
-            <h1 className="mb-3 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-4xl font-bold text-transparent">
-              Connect to Database
-            </h1>
-            <p className="text-slate-600">
-              Connect to your NoSQL database and start exploring your data
-            </p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h1 className="mb-2 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-4xl font-bold text-transparent">
+                Connections
+              </h1>
+              <p className="text-slate-600">
+                Manage your saved database profiles and sessions
+              </p>
+            </div>
           </div>
 
-          {/* Two-Column Layout */}
-          <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
-            {/* Left: Sessions Panel */}
-            <aside>
-              <SessionsPanel onSelectProfile={handleProfileSelect} />
-            </aside>
-
-            {/* Right: Connection Form */}
-            <div>
-              {!selectedDatabase ? (
-                <div className="rounded-xl border bg-white p-8 shadow-sm">
-                  <DatabaseSelector onSelect={setSelectedDatabase} />
-                </div>
-              ) : (
-                <div className="rounded-xl border bg-white p-8 shadow-sm">
-                  <button
-                    onClick={() => {
-                      setSelectedDatabase(null);
-                      setSelectedProfile(null);
-                    }}
-                    className="mb-6 flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to database selection
-                  </button>
-
-                  <ConnectionForm databaseType={selectedDatabase} profile={selectedProfile} />
-                </div>
-              )}
+          <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
+            {/* Left: Main Sessions Panel Area */}
+            <div className="space-y-6">
+              <SessionsPanel
+                key={refreshKey}
+                onSelectProfile={handleProfileSelect}
+                onQuickConnect={handleQuickConnect}
+                selectedProfileId={selectedProfile?.id}
+              />
             </div>
+
+            {/* Right: Quick Stats/Info (Optional but adds to UI richness) */}
+            <aside className="space-y-6 hidden lg:block">
+              <div className="rounded-xl border bg-white/50 backdrop-blur-sm p-6">
+                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <Database className="h-4 w-4 text-blue-600" />
+                  Quick Info
+                </h3>
+                <div className="space-y-4 text-sm text-slate-600">
+                  <p>
+                    Select an existing profile from the list to edit or connect.
+                  </p>
+                  <p>
+                    Use the <strong>Quick Connect</strong> play button to join immediately.
+                  </p>
+                  <div className="pt-4 border-t border-slate-200">
+                    <div className="flex justify-between items-center mb-1">
+                      <span>Saved Profiles</span>
+                      <span className="font-bold text-slate-900">Active</span>
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Profiles are stored securely in your local environment.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </main>
+
+      {/* Modals */}
+      <Modal
+        isOpen={isSelectorOpen}
+        onClose={() => setIsSelectorOpen(false)}
+        title="Choose Database Type"
+        description="Select the type of database you want to connect to"
+        maxWidth="2xl"
+      >
+        <DatabaseSelector onSelect={handleDatabaseSelect} />
+      </Modal>
+
+      <Modal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        title={selectedProfile ? "Edit Connection" : "New Connection"}
+        description={selectedProfile ? `Updating settings for ${selectedProfile.name}` : "Enter your database credentials"}
+        maxWidth="2xl"
+      >
+        {selectedDatabase && (
+          <ConnectionForm
+            databaseType={selectedDatabase}
+            profile={selectedProfile}
+            onProfileSaved={handleProfileSaved}
+            autoConnect={autoConnect}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
