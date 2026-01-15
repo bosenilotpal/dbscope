@@ -1,4 +1,4 @@
-import { Client, types, auth } from 'cassandra-driver';
+import { Client, auth } from 'cassandra-driver';
 import { v4 as uuidv4 } from 'uuid';
 import { transactionLog, queryHistory } from '@/lib/db/sqlite';
 import {
@@ -30,7 +30,7 @@ export class CassandraAdapter implements DatabaseAdapter {
   // Metadata
   readonly type = DatabaseType.CASSANDRA;
   readonly displayName = 'Apache Cassandra';
-  readonly icon = '🗂️';
+  readonly icon = '/Cassandra_logo.svg';
   readonly capabilities: DatabaseCapabilities = {
     supportsKeyspaces: true,
     supportsIndexes: true,
@@ -51,7 +51,17 @@ export class CassandraAdapter implements DatabaseAdapter {
       const host = config.host === 'localhost' ? '127.0.0.1' : config.host;
       const contactPoints = [`${host}:${config.port}`];
 
-      const clientOptions: any = {
+      const clientOptions: {
+        contactPoints: string[];
+        localDataCenter: string;
+        socketOptions: {
+          connectTimeout: number;
+          readTimeout: number;
+          keepAlive: boolean;
+        };
+        authProvider?: InstanceType<typeof auth.PlainTextAuthProvider>;
+        keyspace?: string;
+      } = {
         contactPoints,
         localDataCenter: config.localDataCenter || 'datacenter1',
         socketOptions: {
@@ -287,7 +297,7 @@ export class CassandraAdapter implements DatabaseAdapter {
         throw new Error('Only SELECT queries are allowed');
       }
 
-      const options: any = {
+      const options: { fetchSize: number; pageState?: string } = {
         fetchSize: input.pageSize || 100,
       };
 
@@ -298,7 +308,7 @@ export class CassandraAdapter implements DatabaseAdapter {
       const result = await connection.client.execute(input.query, input.parameters || [], options);
       const executionTime = Date.now() - startTime;
 
-      const columns = result.columns?.map((col: any) => ({
+      const columns = result.columns?.map((col: { name: string; type: unknown }) => ({
         name: col.name,
         type: this.getColumnTypeName(col.type)
       })) || [];
@@ -394,7 +404,7 @@ export class CassandraAdapter implements DatabaseAdapter {
     return connection;
   }
 
-  private getColumnTypeName(columnType: any): string {
+  private getColumnTypeName(columnType: unknown): string {
     if (!columnType) return 'unknown';
 
     const typeMap: { [key: number]: string } = {
@@ -405,13 +415,22 @@ export class CassandraAdapter implements DatabaseAdapter {
       21: 'duration', 32: 'list', 33: 'map', 34: 'set', 48: 'udt', 49: 'tuple'
     };
 
-    if (columnType.code !== undefined && typeMap[columnType.code]) {
+    // Type guard for column type object
+    const isColumnTypeWithCode = (obj: unknown): obj is { code: number; info?: unknown } => {
+      return typeof obj === 'object' && obj !== null && 'code' in obj && typeof (obj as { code: unknown }).code === 'number';
+    };
+
+    const isColumnTypeWithName = (obj: unknown): obj is { name: string } => {
+      return typeof obj === 'object' && obj !== null && 'name' in obj && typeof (obj as { name: unknown }).name === 'string';
+    };
+
+    if (isColumnTypeWithCode(columnType) && typeMap[columnType.code]) {
       let typeName = typeMap[columnType.code];
 
       if (columnType.code === 32 && columnType.info) {
         const elementType = this.getColumnTypeName(columnType.info);
         typeName = `list<${elementType}>`;
-      } else if (columnType.code === 33 && columnType.info) {
+      } else if (columnType.code === 33 && columnType.info && Array.isArray(columnType.info)) {
         const keyType = this.getColumnTypeName(columnType.info[0]);
         const valueType = this.getColumnTypeName(columnType.info[1]);
         typeName = `map<${keyType}, ${valueType}>`;
@@ -423,7 +442,7 @@ export class CassandraAdapter implements DatabaseAdapter {
       return typeName;
     }
 
-    if (columnType.name) {
+    if (isColumnTypeWithName(columnType)) {
       return columnType.name;
     }
 
