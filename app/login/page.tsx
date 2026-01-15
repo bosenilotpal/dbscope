@@ -37,7 +37,7 @@ function LoginForm() {
             const redirectTo = searchParams.get('redirect') || '/';
             router.push(redirectTo);
             router.refresh();
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again.');
             setLoading(false);
         }
@@ -49,7 +49,7 @@ function LoginForm() {
             <header className="fixed top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/" className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-500">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
                             <Database className="h-6 w-6 text-white" />
                         </div>
                         <span className="text-xl font-bold text-slate-900">DBscope</span>

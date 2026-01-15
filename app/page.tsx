@@ -18,6 +18,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { UserProfile } from '@/components/ui/user-profile';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface Contributor {
   login: string;
@@ -188,15 +189,15 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
-      <header className="fixed top-0 z-50 w-full bg-white/70 backdrop-blur-xl shadow-sm shadow-slate-200/50">
+      <header className="fixed top-0 z-50 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
               <Database className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">DBscope</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </div>
           <nav className="flex items-center gap-6">
             <a
@@ -226,6 +227,7 @@ export default function HomePage() {
               <Rocket className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
               Get Started
             </Link>
+            <ThemeToggle />
             <UserProfile />
           </nav>
         </div>

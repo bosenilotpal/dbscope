@@ -5,14 +5,24 @@ import { useSearchParams } from 'next/navigation';
 import { Database, ArrowLeft, Code } from 'lucide-react';
 import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { SchemaTree } from '@/components/features/schema-explorer/schema-tree';
 import { QueryEditor } from '@/components/features/query-editor/query-editor';
 import { ResultsTable } from '@/components/features/query-editor/results-table';
 
+interface QueryResult {
+  success: boolean;
+  results: Record<string, unknown>[];
+  columns: Array<{ name: string; type: string }>;
+  rowCount: number;
+  executionTime: number;
+  error?: string;
+}
+
 export default function ViewerContent() {
   const searchParams = useSearchParams();
   const connectionId = searchParams.get('connectionId');
-  const [queryResults, setQueryResults] = useState<any>(null);
+  const [queryResults, setQueryResults] = useState<QueryResult | null>(null);
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,8 +89,9 @@ export default function ViewerContent() {
           setQueryResults(queryResult);
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to execute query');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to execute query';
+      setError(errorMessage);
       setQueryResults(null);
     } finally {
       setExecuting(false);
@@ -88,22 +99,19 @@ export default function ViewerContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm flex-shrink-0 shadow-sm">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex-shrink-0 shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <ArrowLeft className="h-4 w-4 text-slate-600" />
-            <Database className="h-8 w-8 text-blue-600" />
-            <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-2xl font-bold text-transparent">
-              DBscope
-            </span>
+            <ArrowLeft className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+              <Database className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-slate-500 code-font bg-slate-100 px-3 py-1.5 rounded-full">
-              {connectionId.substring(0, 8)}...
-            </span>
-            <div className="h-6 w-px bg-slate-200" />
+            <ThemeToggle />
             <UserProfile />
           </div>
         </div>
@@ -112,9 +120,9 @@ export default function ViewerContent() {
       {/* Main Content - 3 Column Layout */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Schema Explorer */}
-        <aside className="w-72 border-r bg-white/90 backdrop-blur-sm flex-shrink-0 flex flex-col shadow-sm">
-          <div className="px-4 py-3.5 border-b bg-gradient-to-r from-slate-50 to-slate-100">
-            <h2 className="font-semibold text-sm flex items-center gap-2">
+        <aside className="w-72 bg-white dark:bg-slate-900 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-slate-700">
+          <div className="px-4 py-3.5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="font-semibold text-sm flex items-center gap-2 text-slate-900 dark:text-white">
               <Database className="h-4 w-4 text-blue-600" />
               Schema Explorer
             </h2>
@@ -127,7 +135,7 @@ export default function ViewerContent() {
         {/* Center - Query Editor + Results */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Query Editor */}
-          <div className="h-72 border-b flex-shrink-0 bg-white shadow-sm">
+          <div className="h-72 flex-shrink-0 p-4 pb-0">
             <QueryEditor
               connectionId={connectionId}
               onExecute={executeQuery}
@@ -136,10 +144,10 @@ export default function ViewerContent() {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-hidden p-6 bg-gradient-to-br from-slate-50 to-white">
+          <div className="flex-1 overflow-hidden p-4 bg-gradient-to-br from-slate-50/50 to-white">
             {error ? (
               <div className="h-full flex items-center justify-center">
-                <div className="max-w-2xl w-full p-6 bg-red-50 border-2 border-red-200 rounded-xl shadow-sm">
+                <div className="max-w-2xl w-full p-6 bg-red-50 rounded-2xl shadow-lg shadow-red-100/50">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                       <span className="text-red-600 font-bold">!</span>
@@ -174,7 +182,7 @@ export default function ViewerContent() {
             ) : (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center max-w-md">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center shadow-sm">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/50">
                     <Code className="h-10 w-10 text-blue-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-700 mb-2">Ready to Execute</h3>

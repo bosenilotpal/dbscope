@@ -9,23 +9,34 @@ import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
 import { Modal } from '@/components/ui/modal';
 
+interface ConnectionProfile {
+  id: string;
+  name: string;
+  database_type: string;
+  host?: string;
+  port?: number;
+  is_pinned?: number;
+  last_used_at?: string;
+  created_at?: string;
+}
+
 export default function ConnectPage() {
   const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [selectedProfile, setSelectedProfile] = useState<ConnectionProfile | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [autoConnect, setAutoConnect] = useState(false);
 
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleProfileSelect = (profile: any) => {
+  const handleProfileSelect = (profile: ConnectionProfile) => {
     setSelectedDatabase(profile.database_type);
     setSelectedProfile(profile);
     setAutoConnect(false);
     setIsFormOpen(true);
   };
 
-  const handleQuickConnect = (profile: any) => {
+  const handleQuickConnect = (profile: ConnectionProfile) => {
     setSelectedDatabase(profile.database_type);
     setSelectedProfile(profile);
     setAutoConnect(true);
@@ -52,10 +63,10 @@ export default function ConnectPage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <ArrowLeft className="h-5 w-5" />
-            <Database className="h-8 w-8 text-blue-600" />
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-2xl font-bold text-transparent">
-              DBscope
-            </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+              <Database className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-slate-900">DBscope</span>
           </Link>
           <div className="flex items-center gap-4">
             <button
