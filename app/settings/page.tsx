@@ -17,9 +17,11 @@ import {
 import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useTheme } from '@/context/theme-context';
 
 export default function SettingsPage() {
     const router = useRouter();
+    const { theme, setTheme } = useTheme();
     const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'appearance'>('profile');
     const [user, setUser] = useState<{ username: string } | null>(null);
     const [loading, setLoading] = useState(false);
@@ -72,8 +74,9 @@ export default function SettingsPage() {
 
             setStatus({ type: 'success', message: 'Password updated successfully' });
             setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-        } catch (err: any) {
-            setStatus({ type: 'error', message: err.message });
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to update password';
+            setStatus({ type: 'error', message: errorMessage });
         } finally {
             setLoading(false);
         }
@@ -92,10 +95,10 @@ export default function SettingsPage() {
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
                         <ArrowLeft className="h-5 w-5" />
-                        <Database className="h-8 w-8 text-blue-600" />
-                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-2xl font-bold text-transparent">
-                            DBscope
-                        </span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+                            <Database className="h-6 w-6 text-white" />
+                        </div>
+                        <span className="text-xl font-bold text-slate-900">DBscope</span>
                     </Link>
                     <UserProfile />
                 </div>
@@ -115,7 +118,7 @@ export default function SettingsPage() {
                                 <button
                                     key={tab.id}
                                     onClick={() => {
-                                        setActiveTab(tab.id as any);
+                                        setActiveTab(tab.id as 'profile' | 'security' | 'appearance');
                                         setStatus(null);
                                     }}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.id
@@ -253,17 +256,27 @@ export default function SettingsPage() {
                                 {activeTab === 'appearance' && (
                                     <div className="space-y-6">
                                         <div>
-                                            <h2 className="text-xl font-bold text-slate-900 border-b pb-4 mb-6">Interface Customization</h2>
+                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b dark:border-slate-700 pb-4 mb-6">Interface Customization</h2>
                                             <div className="grid gap-6">
-                                                <div className="p-6 bg-slate-50 rounded-xl border border-slate-200">
+                                                <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                                                     <div className="flex items-center justify-between">
                                                         <div>
-                                                            <h4 className="font-bold text-slate-900">Theme Mode</h4>
-                                                            <p className="text-sm text-slate-500">Choose between light and dark backgrounds</p>
+                                                            <h4 className="font-bold text-slate-900 dark:text-white">Theme Mode</h4>
+                                                            <p className="text-sm text-slate-500 dark:text-slate-400">Choose between light and dark backgrounds</p>
                                                         </div>
-                                                        <div className="flex bg-white rounded-lg p-1 border border-slate-100 shadow-sm">
-                                                            <button className="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-md shadow-sm">Light</button>
-                                                            <button className="px-4 py-1.5 text-slate-600 text-xs font-bold rounded-md hover:bg-slate-50" disabled>Dark (Coming Soon)</button>
+                                                        <div className="flex bg-white dark:bg-slate-700 rounded-lg p-1 border border-slate-100 dark:border-slate-600 shadow-sm">
+                                                            <button
+                                                                onClick={() => setTheme('light')}
+                                                                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${theme === 'light' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600'}`}
+                                                            >
+                                                                Light
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setTheme('dark')}
+                                                                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${theme === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600'}`}
+                                                            >
+                                                                Dark
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -1,4 +1,4 @@
-import { DatabaseAdapter, DatabaseType } from './base/adapter.interface';
+import { DatabaseAdapter, DatabaseType, DatabaseCapabilities } from './base/adapter.interface';
 
 /**
  * Adapter Registry
@@ -8,7 +8,7 @@ import { DatabaseAdapter, DatabaseType } from './base/adapter.interface';
  */
 class AdapterRegistry {
   private adapters = new Map<DatabaseType, DatabaseAdapter>();
-  
+
   /**
    * Register a database adapter
    */
@@ -19,7 +19,7 @@ class AdapterRegistry {
     this.adapters.set(adapter.type, adapter);
     console.log(`✅ Registered adapter: ${adapter.displayName} (${adapter.type})`);
   }
-  
+
   /**
    * Get an adapter by database type
    */
@@ -30,28 +30,28 @@ class AdapterRegistry {
     }
     return adapter;
   }
-  
+
   /**
    * Get all registered adapters
    */
   list(): DatabaseAdapter[] {
     return Array.from(this.adapters.values());
   }
-  
+
   /**
    * Check if an adapter is registered
    */
   has(type: DatabaseType): boolean {
     return this.adapters.has(type);
   }
-  
+
   /**
    * Get available database types
    */
   getAvailableTypes(): DatabaseType[] {
     return Array.from(this.adapters.keys());
   }
-  
+
   /**
    * Get supported databases with metadata
    */
@@ -59,7 +59,7 @@ class AdapterRegistry {
     type: DatabaseType;
     displayName: string;
     icon: string;
-    capabilities: any;
+    capabilities: DatabaseCapabilities;
   }> {
     return this.list().map(adapter => ({
       type: adapter.type,
@@ -84,12 +84,12 @@ adapterRegistry.register(cassandraAdapter);
 // We create a wrapper adapter that uses Cassandra's implementation but presents as ScyllaDB
 const createScyllaDBAdapter = (): DatabaseAdapter => {
   const baseAdapter = new CassandraAdapter();
-  
+
   return {
     ...baseAdapter,
     type: DatabaseType.SCYLLADB,
     displayName: 'ScyllaDB',
-    icon: '⚡',
+    icon: '/scylladb_logo.svg',
   } as DatabaseAdapter;
 };
 

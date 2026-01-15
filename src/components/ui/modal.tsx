@@ -57,32 +57,41 @@ export function Modal({
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
+                className="absolute inset-0 bg-slate-900/50 backdrop-blur-md transition-opacity animate-in fade-in duration-300"
                 onClick={onClose}
             />
 
             {/* Modal Content */}
             <div
                 className={cn(
-                    "relative w-full bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden transition-all animate-in zoom-in-95 slide-in-from-bottom-2 duration-300",
+                    "relative w-full bg-white rounded-2xl shadow-2xl shadow-slate-900/20 overflow-hidden transition-all animate-in zoom-in-95 slide-in-from-bottom-2 duration-300",
                     maxWidthClasses[maxWidth],
                     className
                 )}
             >
-                <div className="px-5 py-4 flex items-center justify-between border-b bg-slate-50/50">
+                {/* Header */}
+                <div className="px-6 py-5 flex items-center justify-between bg-gradient-to-r from-slate-50/80 to-white">
                     <div>
-                        {title && <h3 className="text-lg font-bold text-slate-900">{title}</h3>}
-                        {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
+                        {title && (
+                            <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+                        )}
+                        {description && (
+                            <p className="text-sm text-slate-500 mt-0.5">{description}</p>
+                        )}
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-slate-200 transition-colors text-slate-400 hover:text-slate-600"
+                        className="p-2 rounded-xl hover:bg-slate-100 transition-all duration-200 text-slate-400 hover:text-slate-600 hover:scale-105"
                     >
                         <X className="h-5 w-5" />
                     </button>
                 </div>
 
-                <div className="p-5 max-h-[85vh] overflow-y-auto">
+                {/* Subtle separator */}
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+                {/* Content */}
+                <div className="p-6 max-h-[85vh] overflow-y-auto">
                     {children}
                 </div>
             </div>
