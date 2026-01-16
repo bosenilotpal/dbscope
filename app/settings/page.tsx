@@ -12,18 +12,30 @@ import {
     CheckCircle,
     AlertCircle,
     Eye,
-    EyeOff
+    EyeOff,
+    Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTheme } from '@/context/theme-context';
+import Image from 'next/image';
 
 export default function SettingsPage() {
     const router = useRouter();
     const { theme, setTheme } = useTheme();
     const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'appearance'>('profile');
-    const [user, setUser] = useState<{ username: string } | null>(null);
+    const [user, setUser] = useState<{
+        username: string;
+        email?: string;
+        firstName?: string;
+        lastName?: string;
+        isGoogleConnected?: boolean;
+        avatarUrl?: string
+    } | null>(null);
+    const [editableUsername, setEditableUsername] = useState('');
+    const [editableFirstName, setEditableFirstName] = useState('');
+    const [editableLastName, setEditableLastName] = useState('');
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
@@ -41,13 +53,57 @@ export default function SettingsPage() {
             .then((res) => res.json())
             .then((data) => {
                 if (data.isAuthenticated) {
-                    setUser({ username: data.username });
+                    setUser({
+                        username: data.username,
+                        email: data.email,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        isGoogleConnected: data.isGoogleConnected,
+                        avatarUrl: data.avatarUrl
+                    });
+                    setEditableUsername(data.username);
+                    setEditableFirstName(data.firstName || '');
+                    setEditableLastName(data.lastName || '');
                 } else {
                     router.push('/login');
                 }
             })
             .catch(console.error);
     }, [router]);
+
+    const handleProfileUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setStatus(null);
+
+        try {
+            const response = await fetch('/api/auth/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: editableUsername,
+                    firstName: editableFirstName,
+                    lastName: editableLastName
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to update profile');
+
+            setUser(prev => prev ? {
+                ...prev,
+                username: editableUsername,
+                firstName: editableFirstName,
+                lastName: editableLastName
+            } : null);
+            setStatus({ type: 'success', message: 'Profile updated successfully' });
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to update profile';
+            setStatus({ type: 'error', message: errorMessage });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -147,32 +203,121 @@ export default function SettingsPage() {
                                     <div className="space-y-6">
                                         <div>
                                             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-4 mb-6">Profile Settings</h2>
-                                            <div className="flex items-center gap-6 mb-8 p-6 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
-                                                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
-                                                    {user?.username?.[0]?.toUpperCase() || 'U'}
+
+                                            <div className="flex items-center gap-6 mb-8 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                                                <div className="relative">
+                                                    {user?.avatarUrl ? (
+                                                        <Image src={user.avatarUrl} alt={user.username} width={80} height={80} unoptimized className="h-20 w-20 rounded-full object-cover shadow-lg ring-2 ring-white dark:ring-slate-700" />
+                                                    ) : (
+                                                        <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-600/20">
+                                                            {user?.username?.[0]?.toUpperCase() || 'U'}
+                                                        </div>
+                                                    )}
+                                                    {user?.isGoogleConnected && (
+                                                        <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-1 shadow-sm border border-slate-100 dark:border-slate-800">
+                                                            <svg className="h-5 w-5" viewBox="0 0 24 24">
+                                                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                                                <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+                                                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Account Holder</p>
-                                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{user?.username || 'Loading...'}</h3>
-                                                    <div className="flex gap-2 mt-2">
-                                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase">Administrator</span>
-                                                        <span className="px-2 py-0.5 bg-slate-200 text-slate-600 text-[10px] font-bold rounded uppercase">System Root</span>
-                                                    </div>
+                                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                                        Account Identity
+                                                        {user?.isGoogleConnected && (
+                                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] lowercase border border-blue-100 dark:border-blue-500/20">
+                                                                <div className="h-1 w-1 rounded-full bg-blue-500 animate-pulse"></div>
+                                                                connected with google
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                                                        {user?.username || 'LoadingProfile...'}
+                                                    </h3>
+                                                    {user?.email && (
+                                                        <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1 font-medium">
+                                                            <Mail className="h-3.5 w-3.5 text-slate-400" />
+                                                            {user.email}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
 
-                                            <div className="grid gap-4 max-w-md">
-                                                <div>
-                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Username</label>
-                                                    <input
-                                                        type="text"
-                                                        value={user?.username || ''}
-                                                        disabled
-                                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-400 font-medium opacity-75 cursor-not-allowed"
-                                                    />
-                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 ml-1">Username cannot be changed for system security reasons.</p>
+                                            <form onSubmit={handleProfileUpdate} className="grid gap-6 max-w-md">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">First Name</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editableFirstName}
+                                                            onChange={(e) => setEditableFirstName(e.target.value)}
+                                                            className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-900 dark:text-white font-medium transition-all"
+                                                            placeholder="First name"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">Last Name</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editableLastName}
+                                                            onChange={(e) => setEditableLastName(e.target.value)}
+                                                            className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-900 dark:text-white font-medium transition-all"
+                                                            placeholder="Last name"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">Username</label>
+                                                    <div className="relative group">
+                                                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                                        <input
+                                                            type="text"
+                                                            value={editableUsername}
+                                                            onChange={(e) => setEditableUsername(e.target.value)}
+                                                            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-900 dark:text-white font-medium transition-all"
+                                                            placeholder="Enter new username"
+                                                        />
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 ml-1 leading-relaxed">
+                                                        Note: Your username is shown to other members of the workspace and used in activity logs.
+                                                    </p>
+                                                </div>
+
+                                                {user?.email && (
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                                                        <div className="relative">
+                                                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                            <input
+                                                                type="email"
+                                                                value={user.email}
+                                                                disabled
+                                                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-xl text-slate-500 font-medium opacity-70 cursor-not-allowed"
+                                                            />
+                                                        </div>
+                                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 ml-1 font-medium">
+                                                            Email updates are currently locked for verified Google accounts.
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                <button
+                                                    type="submit"
+                                                    disabled={loading || (
+                                                        editableUsername === user?.username &&
+                                                        editableFirstName === (user?.firstName || '') &&
+                                                        editableLastName === (user?.lastName || '')
+                                                    )}
+                                                    className="w-full h-11 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:shadow-none active:scale-[0.98]"
+                                                >
+                                                    <Save className="h-4 w-4" />
+                                                    {loading ? 'Saving Changes...' : 'Save Profile Changes'}
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 )}

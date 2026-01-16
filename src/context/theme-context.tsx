@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useCallback, useSyncExternalStore, useRef, useLayoutEffect } from 'react';
+import { createContext, useContext, useCallback, useSyncExternalStore, useLayoutEffect, useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -46,13 +46,7 @@ function applyThemeToDOM(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    // Track if this instance has initialized
-    const hasInitialized = useRef<boolean | null>(null);
-
-    // Initialize on first render using the recommended pattern
-    if (hasInitialized.current === null) {
-        hasInitialized.current = false;
-    }
+    const [mounted, setMounted] = useState(false);
 
     // Use useSyncExternalStore to avoid setState in effect lint error
     const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerSnapshot);
@@ -72,18 +66,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             currentTheme = initialTheme;
             applyThemeToDOM(initialTheme);
             isMounted = true;
-            // Force re-render by notifying listeners
-            listeners.forEach(listener => listener());
         }
+    }, []);
+
+    // Signal mount on regular useEffect to avoid cascading render warning in layout effect
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMounted(true);
     }, []);
 
     // Apply theme to DOM whenever theme changes (after mount)
     useLayoutEffect(() => {
-        if (isMounted) {
+        if (mounted) {
             applyThemeToDOM(theme);
             localStorage.setItem(STORAGE_KEY, theme);
         }
-    }, [theme]);
+    }, [theme, mounted]);
 
     // Listen for system preference changes
     useLayoutEffect(() => {
@@ -116,7 +114,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Prevent flash of wrong theme by hiding content until mounted
     return (
         <ThemeContext.Provider value={value}>
-            {isMounted ? children : (
+            {mounted ? children : (
                 <div style={{ visibility: 'hidden' }}>
                     {children}
                 </div>

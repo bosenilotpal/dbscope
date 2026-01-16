@@ -108,24 +108,24 @@ export default function ConnectPage() {
 
             {/* Right: Quick Stats/Info (Optional but adds to UI richness) */}
             <aside className="space-y-6 hidden lg:block">
-              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-6">
+                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                   <Database className="h-4 w-4 text-blue-600" />
                   Quick Info
                 </h3>
-                <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
+                <div className="space-y-4 text-sm text-muted-foreground">
                   <p>
                     Select an existing profile from the list to edit or connect.
                   </p>
                   <p>
                     Use the <strong>Quick Connect</strong> play button to join immediately.
                   </p>
-                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="pt-4 border-t border-border">
                     <div className="flex justify-between items-center mb-1">
                       <span>Saved Profiles</span>
-                      <span className="font-bold text-slate-900 dark:text-white">Active</span>
+                      <span className="font-bold text-foreground">Active</span>
                     </div>
-                    <div className="text-xs text-slate-400 dark:text-slate-500">
+                    <div className="text-xs text-muted-foreground/80">
                       Profiles are stored securely in your local environment.
                     </div>
                   </div>

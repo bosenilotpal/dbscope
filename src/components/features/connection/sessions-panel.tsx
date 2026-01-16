@@ -71,8 +71,8 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
     return (
       <div
         className={`group relative w-full rounded-lg border p-4 transition-all ${isSelected
-            ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
-            : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-md'
+          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500'
+          : 'border-border bg-card hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md'
           }`}
       >
         <div className="flex items-start justify-between">
@@ -81,15 +81,15 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
             className="flex-1 text-left"
           >
             <div className="flex items-center gap-2">
-              <div className={`font-medium ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
+              <div className={`font-medium ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-foreground'}`}>
                 {profile.name}
               </div>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${isSelected ? 'bg-blue-200 text-blue-800' : 'bg-slate-100 text-slate-600'
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${isSelected ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-100' : 'bg-muted text-muted-foreground'
                 }`}>
                 {profile.database_type}
               </span>
             </div>
-            <div className={`mt-1 text-sm ${isSelected ? 'text-blue-700' : 'text-slate-600'}`}>
+            <div className={`mt-1 text-sm ${isSelected ? 'text-blue-700 dark:text-blue-300' : 'text-muted-foreground'}`}>
               {profile.host}:{profile.port}
             </div>
           </button>
@@ -98,23 +98,23 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
             <button
               onClick={() => onQuickConnect(profile)}
               title="Quick Connect"
-              className="rounded p-1.5 text-blue-600 transition-colors hover:bg-blue-100"
+              className="rounded p-1.5 text-blue-600 transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
             >
               <Play className="h-4 w-4 fill-current" />
             </button>
             <button
               onClick={() => onSelectProfile(profile)}
               title="Edit Profile"
-              className="rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              className="rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
             >
               <ExternalLink className="h-4 w-4" />
             </button>
             <button
               onClick={(e) => handleTogglePin(profile.id, e)}
               title={profile.is_pinned ? "Unpin" : "Pin"}
-              className="rounded p-1.5 transition-colors hover:bg-slate-100"
+              className="rounded p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <Pin className={`h-4 w-4 ${profile.is_pinned ? 'fill-yellow-500 text-yellow-500' : 'text-slate-300 hover:text-yellow-500'}`} />
+              <Pin className={`h-4 w-4 ${profile.is_pinned ? 'fill-yellow-500 text-yellow-500' : 'text-slate-300 dark:text-slate-600 hover:text-yellow-500'}`} />
             </button>
             <button
               onClick={(e) => handleDelete(profile.id, e)}
@@ -131,12 +131,12 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
 
   if (loading) {
     return (
-      <div className="rounded-xl border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-4 w-1/3 rounded bg-slate-200"></div>
+          <div className="h-4 w-1/3 rounded bg-muted"></div>
           <div className="space-y-2">
-            <div className="h-12 rounded bg-slate-100"></div>
-            <div className="h-12 rounded bg-slate-100"></div>
+            <div className="h-12 rounded bg-muted/50"></div>
+            <div className="h-12 rounded bg-muted/50"></div>
           </div>
         </div>
       </div>
@@ -144,13 +144,13 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
   }
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm">
+    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       {/* Pinned Sessions */}
       {pinnedProfiles.length > 0 && (
-        <div className="border-b p-6">
+        <div className="border-b border-border p-6">
           <div className="mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-500" />
-            <h3 className="font-semibold text-slate-900">Pinned</h3>
+            <h3 className="font-semibold text-foreground">Pinned</h3>
           </div>
           <div className="space-y-2">
             {pinnedProfiles.map((profile) => (
@@ -164,8 +164,8 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
       {otherProfiles.length > 0 && (
         <div className="p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Database className="h-5 w-5 text-slate-400" />
-            <h3 className="font-semibold text-slate-900">Saved Connections</h3>
+            <Database className="h-5 w-5 text-muted-foreground" />
+            <h3 className="font-semibold text-foreground">Saved Connections</h3>
           </div>
           <div className="space-y-2">
             {otherProfiles.map((profile) => (
@@ -178,11 +178,11 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
       {/* Empty State */}
       {profiles.length === 0 && (
         <div className="p-8 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-            <Clock className="h-6 w-6 text-slate-400" />
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+            <Clock className="h-6 w-6 text-slate-400 dark:text-slate-500" />
           </div>
-          <p className="text-sm text-slate-600">No saved connections yet</p>
-          <p className="mt-1 text-xs text-slate-500">Connect to a database to save your session</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">No saved connections yet</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-600">Connect to a database to save your session</p>
         </div>
       )}
     </div>

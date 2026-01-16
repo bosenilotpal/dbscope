@@ -5,9 +5,20 @@ import { useRouter } from 'next/navigation';
 import { Container, AlertCircle, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+interface ConnectionProfile {
+  id: string;
+  name?: string;
+  host?: string;
+  port?: number;
+  username?: string;
+  password?: string;
+  keyspace?: string;
+  local_data_center?: string;
+}
+
 interface ConnectionFormProps {
   databaseType: string;
-  profile?: any; // Pre-fill from selected profile
+  profile?: ConnectionProfile | null; // Pre-fill from selected profile
   onProfileSaved?: () => void;
   autoConnect?: boolean;
 }
@@ -152,8 +163,9 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
       } else {
         throw new Error(result.data.connect.message);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to connect to database');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to connect to database';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -182,8 +194,9 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
       if (!response.ok) throw new Error('Failed to update profile');
 
       onProfileSaved?.();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save profile changes');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save profile changes';
+      setError(errorMessage);
     } finally {
       setSaveLoading(false);
     }
@@ -243,11 +256,12 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
       if (!testData.success) {
         setError(testData.message);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to test connection');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to test connection';
+      setError(errorMessage);
       setTestResult({
         success: false,
-        message: err.message || 'Failed to test connection',
+        message: errorMessage,
         executionTime: 0
       });
     } finally {
@@ -260,13 +274,13 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
       <div className="mb-1">
         {profile && (
           <div className="mb-3">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-0.5">Profile Name</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-0.5">Profile Name</label>
             <input
               type="text"
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
               placeholder="e.g., Production"
-              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 font-medium text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -297,12 +311,12 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
       )}
 
       {/* Docker Toggle */}
-      <div className="flex items-center gap-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
-        <Container className="h-4 w-4 text-blue-600" />
+      <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-lg">
+        <Container className="h-4 w-4 text-blue-600 dark:text-blue-400" />
         <label className="flex flex-1 items-center justify-between cursor-pointer">
           <div>
-            <div className="text-sm font-semibold text-slate-900">Dockerized Database</div>
-            <div className="text-xs text-slate-500 mt-0.5">Auto-configure for Docker networking</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-white">Dockerized Database</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Auto-configure for Docker networking</div>
           </div>
           <div className="relative inline-block w-9 h-5">
             <input
@@ -311,26 +325,26 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               onChange={(e) => setIsDockerized(e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-9 h-5 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 dark:after:border-slate-700 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
           </div>
         </label>
       </div>
 
       <div className="grid gap-x-4 gap-y-3 md:grid-cols-2">
         <div>
-          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Host</label>
+          <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Host</label>
           <input
             type="text"
             value={formData.host}
             onChange={(e) => setFormData({ ...formData, host: e.target.value })}
-            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
             disabled={isDockerized}
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Port</label>
+          <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Port</label>
           <input
             type="number"
             value={formData.port || ''}
@@ -338,50 +352,50 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               const value = e.target.value === '' ? '' : parseInt(e.target.value);
               setFormData({ ...formData, port: value === '' ? (databaseType === 'cassandra' || databaseType === 'scylladb' ? 9042 : 27017) : value });
             }}
-            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Username</label>
+          <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Username</label>
           <input
             type="text"
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Password</label>
+          <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Password</label>
           <input
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
           />
         </div>
 
         {(databaseType === 'cassandra' || databaseType === 'scylladb') && (
           <>
             <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Keyspace</label>
+              <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Keyspace</label>
               <input
                 type="text"
                 value={formData.keyspace}
                 onChange={(e) => setFormData({ ...formData, keyspace: e.target.value })}
-                className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5 ml-0.5">Data Center</label>
+              <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">Data Center</label>
               <input
                 type="text"
                 value={formData.localDataCenter}
                 onChange={(e) => setFormData({ ...formData, localDataCenter: e.target.value })}
-                className="w-full px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
               />
             </div>
           </>
@@ -397,7 +411,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               onChange={(e) => setSaveProfile(e.target.checked)}
               className="w-3.5 h-3.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
             />
-            <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">Save profile</span>
+            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">Save profile</span>
           </label>
 
           {saveProfile && (
@@ -407,7 +421,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
                 value={profileName}
                 onChange={(e) => setProfileName(e.target.value)}
                 placeholder="Profile Name..."
-                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 dark:text-white"
                 required={saveProfile}
               />
             </div>
@@ -415,12 +429,12 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-5 border-t">
+      <div className="flex items-center gap-3 pt-5 border-t border-border">
         <button
           type="button"
           onClick={handleTestConnection}
           disabled={testLoading || loading || saveLoading}
-          className="px-5 py-2.5 border border-slate-300 rounded-lg font-bold text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="px-5 py-2.5 border border-border rounded-lg font-bold text-sm text-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           {testLoading ? 'Testing...' : 'Test Connection'}
         </button>
@@ -432,7 +446,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             type="button"
             onClick={handleSave}
             disabled={saveLoading || loading}
-            className="px-5 py-2.5 bg-white border border-blue-600 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-5 py-2.5 bg-card border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded-lg font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {saveLoading ? 'Saving...' : 'Save Changes'}
           </button>

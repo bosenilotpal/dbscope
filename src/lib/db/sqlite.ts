@@ -50,6 +50,8 @@ db.exec(`
     email TEXT UNIQUE,
     google_id TEXT UNIQUE,
     avatar_url TEXT,
+    first_name TEXT,
+    last_name TEXT,
     is_active INTEGER DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
@@ -99,6 +101,36 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_transaction_log_connection ON transaction_log(connection_id);
   CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 `);
+
+// Migration: Add new columns to existing users table if they don't exist
+try {
+  // Check if google_id column exists
+  const tableInfo = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
+  const columnNames = tableInfo.map(col => col.name);
+
+  if (!columnNames.includes('google_id')) {
+    db.exec('ALTER TABLE users ADD COLUMN google_id TEXT');
+    db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)');
+    console.log('✅ Migration: Added google_id column to users table');
+  }
+
+  if (!columnNames.includes('avatar_url')) {
+    db.exec('ALTER TABLE users ADD COLUMN avatar_url TEXT');
+    console.log('✅ Migration: Added avatar_url column to users table');
+  }
+
+  if (!columnNames.includes('first_name')) {
+    db.exec('ALTER TABLE users ADD COLUMN first_name TEXT');
+    console.log('✅ Migration: Added first_name column to users table');
+  }
+
+  if (!columnNames.includes('last_name')) {
+    db.exec('ALTER TABLE users ADD COLUMN last_name TEXT');
+    console.log('✅ Migration: Added last_name column to users table');
+  }
+} catch (e) {
+  console.warn('⚠️ Migration check skipped:', e);
+}
 
 // Helper functions
 export function generateId(): string {
@@ -223,7 +255,7 @@ export const transactionLog = {
 
 // Users
 export const users = {
-  getAll: () => db.prepare('SELECT id, username, email, avatar_url, is_active, created_at FROM users').all(),
+  getAll: () => db.prepare('SELECT id, username, email, avatar_url, first_name, last_name, is_active, created_at FROM users').all(),
 
   getByUsername: (username: string) => db.prepare('SELECT * FROM users WHERE username = ?').get(username),
 
@@ -231,7 +263,7 @@ export const users = {
 
   getByGoogleId: (googleId: string) => db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId),
 
-  getById: (id: string) => db.prepare('SELECT id, username, email, avatar_url, is_active, created_at FROM users WHERE id = ?').get(id),
+  getById: (id: string) => db.prepare('SELECT id, username, email, avatar_url, first_name, last_name, is_active, created_at FROM users WHERE id = ?').get(id),
 
   create: (user: {
     username: string;
@@ -251,6 +283,8 @@ export const users = {
     googleId: string;
     name: string;
     avatarUrl?: string;
+    firstName?: string;
+    lastName?: string;
   }) => {
     const id = generateId();
     // Use email prefix as username, ensuring uniqueness
@@ -260,9 +294,9 @@ export const users = {
       username = `${username}_${Date.now().toString(36)}`;
     }
     db.prepare(`
-      INSERT INTO users (id, username, email, google_id, avatar_url)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(id, username, user.email, user.googleId, user.avatarUrl);
+      INSERT INTO users (id, username, password_hash, email, google_id, avatar_url, first_name, last_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, username, '', user.email, user.googleId, user.avatarUrl, user.firstName, user.lastName);
     return { id, username, email: user.email, avatar_url: user.avatarUrl };
   },
 
@@ -275,6 +309,26 @@ export const users = {
 
   updatePassword: (id: string, passwordHash: string) => {
     db.prepare(`UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?`).run(passwordHash, id);
+    return users.getById(id);
+  },
+
+  updateUsername: (id: string, username: string) => {
+    db.prepare(`UPDATE users SET username = ?, updated_at = datetime('now') WHERE id = ?`).run(username, id);
+    return users.getById(id);
+  },
+
+  updateProfile: (id: string, data: { firstName?: string; lastName?: string }) => {
+    const sets = [];
+    const values = [];
+    if (data.firstName !== undefined) { sets.push('first_name = ?'); values.push(data.firstName); }
+    if (data.lastName !== undefined) { sets.push('last_name = ?'); values.push(data.lastName); }
+
+    if (sets.length === 0) return users.getById(id);
+
+    sets.push("updated_at = datetime('now')");
+    values.push(id);
+
+    db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`).run(...values);
     return users.getById(id);
   },
 

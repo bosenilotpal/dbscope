@@ -57,10 +57,10 @@ export function DatabaseSelector({ onSelect }: DatabaseSelectorProps) {
           <button
             key={db.type}
             onClick={() => onSelect(db.type)}
-            className="p-5 bg-white rounded-xl shadow-md shadow-slate-200/50 hover:border-blue-500 hover:shadow-lg transition-all text-left group border border-slate-200"
+            className="p-5 bg-card rounded-xl shadow-md shadow-slate-200/50 dark:shadow-none hover:border-blue-500 transition-all text-left group border border-border"
           >
             <div className="flex items-center gap-4">
-              <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center rounded-xl bg-slate-50 group-hover:bg-blue-50 transition-colors">
+              <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/40 transition-colors">
                 {isIconPath(db.icon) ? (
                   <Image
                     src={db.icon}
@@ -74,11 +74,11 @@ export function DatabaseSelector({ onSelect }: DatabaseSelectorProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-base text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                <h4 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                   {db.displayName}
                 </h4>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-xs bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition-colors">
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/50 group-hover:text-blue-600 dark:group-hover:text-blue-300 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition-colors">
                     {db.capabilities.queryLanguage}
                   </span>
                 </div>
