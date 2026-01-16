@@ -152,8 +152,8 @@ export default function SettingsPage() {
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
                         <ArrowLeft className="h-5 w-5 dark:text-slate-400" />
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
-                            <Database className="h-6 w-6 text-white" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-blue-600/25">
+                            <Image src="/logo.png" alt="DBscope" width={40} height={40} className="h-10 w-10" />
                         </div>
                         <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
                     </Link>

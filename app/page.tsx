@@ -195,8 +195,8 @@ export default function HomePage() {
       <header className="fixed top-0 z-50 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
-              <Database className="h-6 w-6 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-blue-600/25">
+              <Image src="/logo.png" alt="DBscope" width={40} height={40} className="h-10 w-10" />
             </div>
             <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </div>
@@ -300,7 +300,7 @@ export default function HomePage() {
             </div>
           </div>
 
-        
+
           {/* CTA */}
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
@@ -446,7 +446,7 @@ export default function HomePage() {
               Join our growing community of developers building the future of database management.
             </p>
           </div>
-		   {/* Git Activity Heatmap */}
+          {/* Git Activity Heatmap */}
           <div className="mx-auto mt- mb-12 max-w-3xl">
             <CommitHeatmap />
           </div>
@@ -482,10 +482,10 @@ export default function HomePage() {
             <Github className="h-4 w-4" />
             Become a Contributor
           </a>
-		   
+
 
         </div>
-		
+
       </section>
 
       {/* Footer */}

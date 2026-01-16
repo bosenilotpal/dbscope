@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Database, ArrowLeft, Code } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { UserProfile } from '@/components/ui/user-profile';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { SchemaTree } from '@/components/features/schema-explorer/schema-tree';
@@ -105,8 +106,8 @@ export default function ViewerContent() {
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <ArrowLeft className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
-              <Database className="h-6 w-6 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-blue-600/25">
+              <Image src="/logo.png" alt="DBscope" width={40} height={40} className="h-10 w-10" />
             </div>
             <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </Link>
