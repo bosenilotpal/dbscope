@@ -73,6 +73,8 @@ DATABASE_PATH=/path/to/your/database.db
 - ✅ Logout functionality
 - ✅ 24-hour session duration
 - ✅ Multi-user support
+- ✅ Google OAuth integration
+- ✅ GitHub OAuth integration
 
 ## Usage
 

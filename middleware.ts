@@ -10,7 +10,7 @@ const SECRET_KEY = new TextEncoder().encode(
 const guestOnlyRoutes = ['/', '/login'];
 
 // Public API routes (no auth required)
-const publicApiRoutes = ['/api/auth/login', '/api/auth/google'];
+const publicApiRoutes = ['/api/auth/login', '/api/auth/google', '/api/auth/github'];
 
 // Routes that require authentication (protected pages)
 const protectedRoutes = ['/connect', '/viewer', '/settings'];

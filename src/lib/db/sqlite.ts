@@ -49,6 +49,7 @@ db.exec(`
     password_hash TEXT,
     email TEXT UNIQUE,
     google_id TEXT UNIQUE,
+    github_id TEXT UNIQUE,
     avatar_url TEXT,
     first_name TEXT,
     last_name TEXT,
@@ -127,6 +128,12 @@ try {
   if (!columnNames.includes('last_name')) {
     db.exec('ALTER TABLE users ADD COLUMN last_name TEXT');
     console.log('✅ Migration: Added last_name column to users table');
+  }
+
+  if (!columnNames.includes('github_id')) {
+    db.exec('ALTER TABLE users ADD COLUMN github_id TEXT');
+    db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_github_id ON users(github_id)');
+    console.log('✅ Migration: Added github_id column to users table');
   }
 } catch (e) {
   console.warn('⚠️ Migration check skipped:', e);
@@ -304,6 +311,36 @@ export const users = {
     db.prepare(`
       UPDATE users SET google_id = ?, avatar_url = COALESCE(?, avatar_url), updated_at = datetime('now') WHERE id = ?
     `).run(googleId, avatarUrl, userId);
+    return users.getById(userId);
+  },
+
+  getByGithubId: (githubId: string) => db.prepare('SELECT * FROM users WHERE github_id = ?').get(githubId),
+
+  createFromGithub: (user: {
+    email: string;
+    githubId: string;
+    name: string;
+    username: string;
+    avatarUrl?: string;
+  }) => {
+    const id = generateId();
+    // Use GitHub username, ensuring uniqueness
+    let username = user.username;
+    const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+    if (existingUser) {
+      username = `${username}_${Date.now().toString(36)}`;
+    }
+    db.prepare(`
+      INSERT INTO users (id, username, password_hash, email, github_id, avatar_url)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(id, username, '', user.email, user.githubId, user.avatarUrl);
+    return { id, username, email: user.email, avatar_url: user.avatarUrl };
+  },
+
+  linkGithubAccount: (userId: string, githubId: string, avatarUrl?: string) => {
+    db.prepare(`
+      UPDATE users SET github_id = ?, avatar_url = COALESCE(?, avatar_url), updated_at = datetime('now') WHERE id = ?
+    `).run(githubId, avatarUrl, userId);
     return users.getById(userId);
   },
 
