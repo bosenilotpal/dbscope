@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { UserProfile } from '@/components/ui/user-profile';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { CommitHeatmap } from '@/components/git-heatmap';
 
 interface Contributor {
   login: string;
@@ -299,6 +300,7 @@ export default function HomePage() {
             </div>
           </div>
 
+        
           {/* CTA */}
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
@@ -444,6 +446,10 @@ export default function HomePage() {
               Join our growing community of developers building the future of database management.
             </p>
           </div>
+		   {/* Git Activity Heatmap */}
+          <div className="mx-auto mt- mb-12 max-w-3xl">
+            <CommitHeatmap />
+          </div>
 
           <div className="mb-8 flex flex-wrap justify-center gap-4">
             {contributors.map((contributor) => (
@@ -476,7 +482,10 @@ export default function HomePage() {
             <Github className="h-4 w-4" />
             Become a Contributor
           </a>
+		   
+
         </div>
+		
       </section>
 
       {/* Footer */}
