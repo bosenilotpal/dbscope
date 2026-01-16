@@ -20,7 +20,7 @@ try {
 }
 
 // Initialize database connection
-let db: any;
+let db: Database.Database;
 try {
   db = new Database(dbPath);
 } catch (e) {
@@ -35,7 +35,7 @@ try {
     }),
     exec: () => { },
     pragma: () => { }
-  } as any;
+  } as unknown as Database.Database;
 }
 
 // Enable WAL mode for better concurrent access
@@ -46,8 +46,10 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    email TEXT,
+    password_hash TEXT,
+    email TEXT UNIQUE,
+    google_id TEXT UNIQUE,
+    avatar_url TEXT,
     is_active INTEGER DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
@@ -139,7 +141,7 @@ export const profiles = {
     localDataCenter: string;
   }>) => {
     const sets: string[] = [];
-    const values: any[] = [];
+    const values: (string | number | undefined)[] = [];
 
     if (profile.name !== undefined) { sets.push('name = ?'); values.push(profile.name); }
     if (profile.host !== undefined) { sets.push('host = ?'); values.push(profile.host); }
@@ -162,7 +164,7 @@ export const profiles = {
   },
 
   togglePin: (id: string) => {
-    const profile = profiles.getById(id) as any;
+    const profile = profiles.getById(id) as { is_pinned?: number } | undefined;
     if (!profile) throw new Error('Profile not found');
     const newPinned = profile.is_pinned ? 0 : 1;
     db.prepare('UPDATE connection_profiles SET is_pinned = ?, updated_at = datetime(\'now\') WHERE id = ?').run(newPinned, id);
@@ -221,11 +223,15 @@ export const transactionLog = {
 
 // Users
 export const users = {
-  getAll: () => db.prepare('SELECT id, username, email, is_active, created_at FROM users').all(),
+  getAll: () => db.prepare('SELECT id, username, email, avatar_url, is_active, created_at FROM users').all(),
 
   getByUsername: (username: string) => db.prepare('SELECT * FROM users WHERE username = ?').get(username),
 
-  getById: (id: string) => db.prepare('SELECT id, username, email, is_active, created_at FROM users WHERE id = ?').get(id),
+  getByEmail: (email: string) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
+
+  getByGoogleId: (googleId: string) => db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId),
+
+  getById: (id: string) => db.prepare('SELECT id, username, email, avatar_url, is_active, created_at FROM users WHERE id = ?').get(id),
 
   create: (user: {
     username: string;
@@ -238,6 +244,33 @@ export const users = {
       VALUES (?, ?, ?, ?)
     `).run(id, user.username, user.passwordHash, user.email);
     return { id, username: user.username, email: user.email };
+  },
+
+  createFromGoogle: (user: {
+    email: string;
+    googleId: string;
+    name: string;
+    avatarUrl?: string;
+  }) => {
+    const id = generateId();
+    // Use email prefix as username, ensuring uniqueness
+    let username = user.email.split('@')[0];
+    const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+    if (existingUser) {
+      username = `${username}_${Date.now().toString(36)}`;
+    }
+    db.prepare(`
+      INSERT INTO users (id, username, email, google_id, avatar_url)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(id, username, user.email, user.googleId, user.avatarUrl);
+    return { id, username, email: user.email, avatar_url: user.avatarUrl };
+  },
+
+  linkGoogleAccount: (userId: string, googleId: string, avatarUrl?: string) => {
+    db.prepare(`
+      UPDATE users SET google_id = ?, avatar_url = COALESCE(?, avatar_url), updated_at = datetime('now') WHERE id = ?
+    `).run(googleId, avatarUrl, userId);
+    return users.getById(userId);
   },
 
   updatePassword: (id: string, passwordHash: string) => {
@@ -256,11 +289,7 @@ try {
   const admin = users.getByUsername('admin');
   if (!admin) {
     console.log('🌱 No admin user found. Provisioning default account...');
-    // Pre-computed hash for password 'admin' (using bcrypt salt 10)
-    const adminHash = '$2a$10$8.N.Y6O6O6O6O6O6O6O6Oe.y5I6.mS.O1.y5I6.mS.O1.y5I6.mS.O';
-    // Wait, let's just compute it to be safe if we have bcrypt available
-    // Actually, to keep this top-level safe and fast, pre-computed is better.
-    // The hash below is for 'admin'
+    // Pre-computed bcrypt hash for password 'admin'
     const id = generateId();
     db.prepare(`
       INSERT INTO users (id, username, password_hash, email)

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useSyncExternalStore, useCallback } from 'react';
+import { createContext, useContext, useCallback, useSyncExternalStore, useRef, useLayoutEffect } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -12,62 +12,111 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-function applyThemeToDOM(newTheme: Theme) {
-    const root = document.documentElement;
-    if (newTheme === 'dark') {
-        root.classList.add('dark');
-    } else {
-        root.classList.remove('dark');
-    }
+const STORAGE_KEY = 'dbscope-theme';
+
+// External store for theme
+let currentTheme: Theme = 'light';
+let isMounted = false;
+const listeners = new Set<() => void>();
+
+function getThemeSnapshot(): Theme {
+    return currentTheme;
 }
 
 function getServerSnapshot(): Theme {
     return 'light';
 }
 
-function getClientSnapshot(): Theme {
-    if (typeof window === 'undefined') return 'light';
-    const stored = localStorage.getItem('dbscope-theme') as Theme | null;
-    if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function subscribeToTheme(callback: () => void): () => void {
+    listeners.add(callback);
+    return () => listeners.delete(callback);
 }
 
-function subscribe(callback: () => void): () => void {
-    // Listen for storage changes (for cross-tab sync)
-    window.addEventListener('storage', callback);
-    return () => window.removeEventListener('storage', callback);
+function updateTheme(newTheme: Theme) {
+    currentTheme = newTheme;
+    listeners.forEach(listener => listener());
+}
+
+function applyThemeToDOM(theme: Theme) {
+    if (typeof document !== 'undefined') {
+        const root = document.documentElement;
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+    }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    // Use useSyncExternalStore to get initial theme without useEffect
-    const initialTheme = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
-    const [theme, setThemeState] = useState<Theme>(initialTheme);
-    const [mounted, setMounted] = useState(false);
+    // Track if this instance has initialized
+    const hasInitialized = useRef<boolean | null>(null);
 
-    // Use a ref-based approach to set mounted without triggering the lint rule
-    if (typeof window !== 'undefined' && !mounted) {
-        setMounted(true);
-        applyThemeToDOM(initialTheme);
+    // Initialize on first render using the recommended pattern
+    if (hasInitialized.current === null) {
+        hasInitialized.current = false;
     }
 
+    // Use useSyncExternalStore to avoid setState in effect lint error
+    const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerSnapshot);
+
+    // Initialize theme synchronously on layout effect (before paint)
+    useLayoutEffect(() => {
+        if (!isMounted) {
+            // Get initial theme from localStorage or system preference
+            let initialTheme: Theme = 'light';
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored === 'dark' || stored === 'light') {
+                initialTheme = stored;
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                initialTheme = 'dark';
+            }
+
+            currentTheme = initialTheme;
+            applyThemeToDOM(initialTheme);
+            isMounted = true;
+            // Force re-render by notifying listeners
+            listeners.forEach(listener => listener());
+        }
+    }, []);
+
+    // Apply theme to DOM whenever theme changes (after mount)
+    useLayoutEffect(() => {
+        if (isMounted) {
+            applyThemeToDOM(theme);
+            localStorage.setItem(STORAGE_KEY, theme);
+        }
+    }, [theme]);
+
+    // Listen for system preference changes
+    useLayoutEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleChange = (e: MediaQueryListEvent) => {
+            // Only update if user hasn't explicitly set a preference
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                updateTheme(newTheme);
+            }
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
+
     const setTheme = useCallback((newTheme: Theme) => {
-        setThemeState(newTheme);
-        localStorage.setItem('dbscope-theme', newTheme);
-        applyThemeToDOM(newTheme);
+        updateTheme(newTheme);
     }, []);
 
     const toggleTheme = useCallback(() => {
-        setThemeState(prev => {
-            const newTheme = prev === 'light' ? 'dark' : 'light';
-            localStorage.setItem('dbscope-theme', newTheme);
-            applyThemeToDOM(newTheme);
-            return newTheme;
-        });
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        updateTheme(newTheme);
     }, []);
 
+    // Always provide context
+    const value = { theme, toggleTheme, setTheme };
+
+    // Prevent flash of wrong theme by hiding content until mounted
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-            {mounted ? children : (
+        <ThemeContext.Provider value={value}>
+            {isMounted ? children : (
                 <div style={{ visibility: 'hidden' }}>
                     {children}
                 </div>

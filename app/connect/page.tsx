@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { DatabaseSelector } from '@/components/features/connection/database-selector';
 import { ConnectionForm } from '@/components/features/connection/connection-form';
 import { SessionsPanel } from '@/components/features/connection/sessions-panel';
-import { Database, ArrowLeft, Plus } from 'lucide-react';
+import { Database, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
 import { Modal } from '@/components/ui/modal';
@@ -61,8 +61,7 @@ export default function ConnectPage() {
       {/* Header */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <ArrowLeft className="h-5 w-5 dark:text-slate-400" />
+          <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
               <Database className="h-6 w-6 text-white" />
             </div>

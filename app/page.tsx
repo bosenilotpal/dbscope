@@ -259,7 +259,7 @@ export default function HomePage() {
 
           {/* Docker Command Box */}
           <div className="mx-auto mb-12 max-w-3xl">
-            <div className="group rounded-2xl bg-gradient-to-r from-blue-500/10 via-violet-500/10 to-blue-500/10 p-[1px] shadow-xl shadow-slate-200/50 transition-all hover:shadow-2xl hover:shadow-blue-500/20">
+            <div className="group rounded-2xl bg-gradient-to-r from-blue-500/10 via-violet-500/10 to-blue-500/10 p-[1px] shadow-xl shadow-slate-200/50 dark:shadow-none transition-all hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10">
               <div className="rounded-2xl bg-slate-900 p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
