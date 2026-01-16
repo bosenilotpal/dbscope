@@ -57,20 +57,20 @@ export function DatabaseSelector({ onSelect }: DatabaseSelectorProps) {
           <button
             key={db.type}
             onClick={() => onSelect(db.type)}
-            className="p-5 bg-card rounded-xl shadow-md shadow-slate-200/50 dark:shadow-none hover:border-blue-500 transition-all text-left group border border-border"
+            className="p-5 bg-card rounded-xl shadow-sm transition-all text-left group border border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-md dark:hover:shadow-none"
           >
             <div className="flex items-center gap-4">
-              <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/40 transition-colors">
+              <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-gradient-to-br group-hover:from-blue-600/10 group-hover:to-blue-400/10 dark:group-hover:from-blue-900/40 dark:group-hover:to-blue-800/20 transition-all duration-300">
                 {isIconPath(db.icon) ? (
                   <Image
                     src={db.icon}
                     alt={db.displayName}
                     width={36}
                     height={36}
-                    className="transition-transform group-hover:scale-105"
+                    className="transition-transform group-hover:scale-110"
                   />
                 ) : (
-                  <span className="text-3xl">{db.icon}</span>
+                  <span className="text-3xl transition-transform group-hover:scale-110">{db.icon}</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -78,7 +78,7 @@ export function DatabaseSelector({ onSelect }: DatabaseSelectorProps) {
                   {db.displayName}
                 </h4>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/50 group-hover:text-blue-600 dark:group-hover:text-blue-300 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition-colors">
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 group-hover:bg-gradient-to-r group-hover:from-blue-600/10 group-hover:to-blue-400/10 group-hover:text-blue-600 dark:group-hover:text-blue-300 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition-all duration-300">
                     {db.capabilities.queryLanguage}
                   </span>
                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronDown, Database, Table, Columns } from 'lucide-react';
 
 interface SchemaTreeProps {
@@ -33,11 +33,7 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
   const [keyspaces, setKeyspaces] = useState<Keyspace[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadKeyspaces();
-  }, [connectionId]);
-
-  const loadKeyspaces = async () => {
+  const loadKeyspaces = useCallback(async () => {
     try {
       const response = await fetch('/api/graphql', {
         method: 'POST',
@@ -57,18 +53,22 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
 
       const result = await response.json();
       if (result.data?.listDatabases) {
-        setKeyspaces(result.data.listDatabases.map((ks: any) => ({ ...ks, expanded: false })));
+        setKeyspaces(result.data.listDatabases.map((ks: Keyspace) => ({ ...ks, expanded: false })));
       }
     } catch (error) {
       console.error('Failed to load keyspaces:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [connectionId]);
+
+  useEffect(() => {
+    loadKeyspaces();
+  }, [connectionId, loadKeyspaces]);
 
   const toggleKeyspace = async (index: number) => {
     const ks = keyspaces[index];
-    
+
     if (!ks.expanded && !ks.tables) {
       // Load tables
       try {
@@ -93,7 +93,7 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
           const updated = [...keyspaces];
           updated[index] = {
             ...ks,
-            tables: result.data.listCollections.map((t: any) => ({ ...t, expanded: false })),
+            tables: result.data.listCollections.map((t: Table) => ({ ...t, expanded: false })),
             expanded: true
           };
           setKeyspaces(updated);
@@ -173,7 +173,7 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
         <div key={ks.name}>
           <button
             onClick={() => toggleKeyspace(ksIndex)}
-            className="flex items-center gap-2 w-full px-2 py-1.5 hover:bg-slate-100 rounded text-sm"
+            className="flex items-center gap-2 w-full px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg text-sm text-slate-700 dark:text-slate-300 transition-colors"
           >
             {ks.expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             <Database className="h-4 w-4 text-blue-600" />
@@ -187,7 +187,7 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
                 <div key={table.name}>
                   <button
                     onClick={() => toggleTable(ksIndex, tableIndex)}
-                    className="flex items-center gap-2 w-full px-2 py-1.5 hover:bg-slate-100 rounded text-sm"
+                    className="flex items-center gap-2 w-full px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg text-sm text-slate-700 dark:text-slate-300 transition-colors"
                   >
                     {table.expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                     <Table className="h-4 w-4 text-green-600" />
@@ -200,10 +200,10 @@ export function SchemaTree({ connectionId, onTableSelect }: SchemaTreeProps) {
                       {table.columns.map((col) => (
                         <div
                           key={col.name}
-                          className="flex items-center gap-2 px-2 py-1 text-sm text-slate-700"
+                          className="flex items-center gap-2 px-2 py-1 text-sm text-slate-600 dark:text-slate-400"
                         >
                           <Columns className="h-3 w-3 text-slate-400" />
-                          <span className="code-font text-xs">{col.name}</span>
+                          <span className="code-font text-xs text-slate-900 dark:text-slate-100 font-medium">{col.name}</span>
                           <span className="text-xs text-slate-500">{col.type}</span>
                           {col.primary_key && (
                             <span className="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">PK</span>

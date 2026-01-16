@@ -37,6 +37,7 @@ export function ResultsTable({ data, columns: columnDefs, executionTime, rowCoun
     }));
   }, [columnDefs]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -63,7 +64,7 @@ export function ResultsTable({ data, columns: columnDefs, executionTime, rowCoun
   };
 
   return (
-    <div className="flex flex-col h-full rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+    <div className="flex flex-col h-full rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/50">
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">

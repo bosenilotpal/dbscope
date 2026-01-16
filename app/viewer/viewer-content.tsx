@@ -105,7 +105,7 @@ export default function ViewerContent() {
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <ArrowLeft className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
               <Database className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
@@ -123,7 +123,9 @@ export default function ViewerContent() {
         <aside className="w-72 bg-white dark:bg-black flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-slate-800">
           <div className="px-4 py-3.5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-black border-b border-slate-200 dark:border-slate-800">
             <h2 className="font-semibold text-sm flex items-center gap-2 text-slate-900 dark:text-white">
-              <Database className="h-4 w-4 text-blue-600" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600/10 border border-blue-600/20">
+                <Database className="h-3.5 w-3.5 text-blue-600" />
+              </div>
               Schema Explorer
             </h2>
           </div>
@@ -163,8 +165,8 @@ export default function ViewerContent() {
               <div className="h-full flex items-center justify-center">
                 <div className="text-center">
                   <div className="relative w-16 h-16 mx-auto mb-4">
-                    <div className="absolute inset-0 border-4 border-blue-200 dark:border-blue-900 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+                    <div className="absolute inset-0 border-4 border-blue-100 dark:border-blue-900/30 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-transparent border-t-blue-600 border-r-blue-400 rounded-full animate-spin"></div>
                   </div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Executing query...</p>
                   <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Please wait</p>
@@ -182,7 +184,7 @@ export default function ViewerContent() {
             ) : (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center max-w-md">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-blue-900 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-600/10 to-blue-400/10 dark:from-blue-600/20 dark:to-blue-400/10 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/10 border border-blue-600/20">
                     <Code className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Ready to Execute</h3>

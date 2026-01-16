@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { UserProfile } from '@/components/ui/user-profile';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTheme } from '@/context/theme-context';
 import Image from 'next/image';
@@ -151,12 +152,16 @@ export default function SettingsPage() {
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
                         <ArrowLeft className="h-5 w-5 dark:text-slate-400" />
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
                             <Database className="h-6 w-6 text-white" />
                         </div>
                         <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
                     </Link>
-                    <UserProfile />
+                    <div className="flex items-center gap-4">
+                        <ThemeToggle />
+                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
+                        <UserProfile />
+                    </div>
                 </div>
             </header>
 

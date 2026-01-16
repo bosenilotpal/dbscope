@@ -100,7 +100,7 @@ export function UserProfile() {
                 top: dropdownPosition.top,
                 right: dropdownPosition.right,
             }}
-            className="w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 z-[99999] animate-in fade-in zoom-in-95 duration-200"
+            className="w-48 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800/50 py-1.5 z-[99999] animate-in fade-in zoom-in-95 duration-200"
         >
             <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 mb-1">
                 <div className="flex items-center justify-between gap-2">
@@ -156,7 +156,7 @@ export function UserProfile() {
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
+                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-transparent hover:shadow-sm group"
             >
                 <div className="relative">
                     {user?.avatarUrl ? (
@@ -216,7 +216,7 @@ export function UserProfile() {
                     <div className="flex gap-3 w-full">
                         <button
                             onClick={() => setIsConfirmOpen(false)}
-                            className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                            className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                         >
                             Cancel
                         </button>

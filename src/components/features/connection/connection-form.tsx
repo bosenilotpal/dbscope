@@ -280,7 +280,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
               placeholder="e.g., Production"
-              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 font-medium text-slate-900 dark:text-white"
+              className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
               required
             />
           </div>
@@ -325,7 +325,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               onChange={(e) => setIsDockerized(e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-9 h-5 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 dark:after:border-slate-700 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
+            <div className="w-9 h-5 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 dark:after:border-slate-700 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
           </div>
         </label>
       </div>
@@ -337,7 +337,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             type="text"
             value={formData.host}
             onChange={(e) => setFormData({ ...formData, host: e.target.value })}
-            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+            className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
             disabled={isDockerized}
             required
           />
@@ -352,7 +352,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
               const value = e.target.value === '' ? '' : parseInt(e.target.value);
               setFormData({ ...formData, port: value === '' ? (databaseType === 'cassandra' || databaseType === 'scylladb' ? 9042 : 27017) : value });
             }}
-            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+            className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
             required
           />
         </div>
@@ -363,7 +363,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             type="text"
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+            className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
           />
         </div>
 
@@ -373,7 +373,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+            className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
           />
         </div>
 
@@ -385,7 +385,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
                 type="text"
                 value={formData.keyspace}
                 onChange={(e) => setFormData({ ...formData, keyspace: e.target.value })}
-                className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+                className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
               />
             </div>
 
@@ -395,7 +395,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
                 type="text"
                 value={formData.localDataCenter}
                 onChange={(e) => setFormData({ ...formData, localDataCenter: e.target.value })}
-                className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-input text-foreground"
+                className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
               />
             </div>
           </>
@@ -429,12 +429,12 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-5 border-t border-border">
+      <div className="flex items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/50">
         <button
           type="button"
           onClick={handleTestConnection}
           disabled={testLoading || loading || saveLoading}
-          className="px-5 py-2.5 border border-border rounded-lg font-bold text-sm text-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {testLoading ? 'Testing...' : 'Test Connection'}
         </button>
@@ -446,7 +446,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             type="button"
             onClick={handleSave}
             disabled={saveLoading || loading}
-            className="px-5 py-2.5 bg-card border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded-lg font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-5 py-2.5 bg-card border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded-lg font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {saveLoading ? 'Saving...' : 'Save Changes'}
           </button>
@@ -455,7 +455,7 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
         <button
           type="submit"
           disabled={loading || saveLoading}
-          className="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg shadow-blue-600/20"
+          className="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-600/20"
         >
           {loading ? 'Connecting...' : 'Connect'}
         </button>

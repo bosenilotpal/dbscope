@@ -194,7 +194,7 @@ export default function HomePage() {
       <header className="fixed top-0 z-50 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
               <Database className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
@@ -222,7 +222,7 @@ export default function HomePage() {
             </a>
             <Link
               href="/connect"
-              className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:shadow-xl hover:shadow-blue-600/30 hover:scale-[1.02]"
+              className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 hover:scale-[1.02]"
             >
               <Rocket className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
               Get Started
@@ -237,8 +237,8 @@ export default function HomePage() {
       <section className="container mx-auto px-4 pt-32 pb-20">
         <div className="mx-auto max-w-4xl text-center">
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 px-4 py-1.5 text-sm text-blue-700 dark:text-blue-300 shadow-sm">
-            <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 animate-pulse"></div>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950 px-4 py-1.5 text-sm text-blue-700 dark:text-blue-300 shadow-sm border border-blue-100 dark:border-blue-900/50">
+            <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></div>
             Open Source • Secure • Production Ready
           </div>
 
@@ -246,7 +246,7 @@ export default function HomePage() {
           <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white md:text-6xl lg:text-7xl">
             The Modern UI for
             <br />
-            <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-blue-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+            <span className="text-blue-600">
               NoSQL Databases
             </span>
           </h1>
@@ -259,7 +259,7 @@ export default function HomePage() {
 
           {/* Docker Command Box */}
           <div className="mx-auto mb-12 max-w-3xl">
-            <div className="group rounded-2xl bg-gradient-to-r from-blue-500/10 via-violet-500/10 to-blue-500/10 p-[1px] shadow-xl shadow-slate-200/50 dark:shadow-none transition-all hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10">
+            <div className="group rounded-2xl bg-blue-500/10 p-[1px] shadow-xl shadow-slate-200/50 dark:shadow-none transition-all hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10">
               <div className="rounded-2xl bg-slate-900 p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -303,7 +303,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/connect"
-              className="group inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-8 py-4 font-semibold text-white shadow-xl shadow-blue-600/30 transition-all hover:shadow-2xl hover:shadow-blue-600/40 hover:scale-[1.02]"
+              className="group inline-flex items-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white shadow-xl shadow-blue-600/30 transition-all hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-600/40 hover:scale-[1.02]"
             >
               <Rocket className="h-5 w-5 transition-transform group-hover:-translate-y-1 group-hover:rotate-12" />
               Get Started
@@ -386,7 +386,7 @@ export default function HomePage() {
                 className="group rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-lg shadow-slate-200/50 dark:shadow-black/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 dark:border dark:border-slate-800"
               >
                 <div className="mb-4">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 text-blue-600 dark:text-blue-400 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25">
                     <feature.icon className="h-6 w-6" />
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-b from-slate-50/50 to-white dark:from-black dark:to-black">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-8">
-            <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 p-4 shadow-lg shadow-blue-500/10">
+            <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/30 p-4 shadow-lg shadow-blue-500/10">
               <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">
@@ -502,13 +502,7 @@ export default function HomePage() {
       </footer >
 
       <style jsx>{`
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient {
-          animation: gradient 3s ease infinite;
-        }
+        /* Custom styles for home page */
       `}</style>
     </div >
   );

@@ -4,6 +4,7 @@ import { useState, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Database, Lock, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 function LoginForm() {
     const router = useRouter();
@@ -49,7 +50,7 @@ function LoginForm() {
             <header className="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-md">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/" className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/25">
                             <Database className="h-6 w-6 text-white" />
                         </div>
                         <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
@@ -61,12 +62,13 @@ function LoginForm() {
                         >
                             Back to Home
                         </Link>
+                        <ThemeToggle />
                     </nav>
                 </div>
             </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col justify-center container mx-auto px-4 pt-20 pb-12">
+            < div className="flex-1 flex flex-col justify-center container mx-auto px-4 pt-20 pb-12" >
                 <div className="mx-auto w-full max-w-md">
                     {/* Title Section */}
                     <div className="text-center mb-8">
@@ -174,10 +176,10 @@ function LoginForm() {
                         </a>
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Footer */}
-            <footer className="border-t border-slate-200 dark:border-slate-800 py-12 bg-white dark:bg-black">
+            < footer className="border-t border-slate-200 dark:border-slate-800 py-12 bg-white dark:bg-black" >
                 <div className="container mx-auto px-4 text-center">
                     <p className="text-sm font-medium text-slate-900 dark:text-white">
                         DBscope
@@ -186,8 +188,8 @@ function LoginForm() {
                         Built by developers, for developers • Open source under MIT License
                     </p>
                 </div>
-            </footer>
-        </div>
+            </footer >
+        </div >
     );
 }
 

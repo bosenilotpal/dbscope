@@ -70,10 +70,10 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
 
     return (
       <div
-        className={`group relative w-full rounded-lg border p-4 transition-all ${isSelected
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500'
-          : 'border-border bg-card hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md'
-          }`}
+        className={`group relative w-full rounded-xl transition-all ${isSelected
+          ? 'bg-blue-600/5 dark:bg-blue-600/10 ring-1 ring-blue-600/20 shadow-sm'
+          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+          } p-4`}
       >
         <div className="flex items-start justify-between">
           <button
@@ -98,7 +98,7 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
             <button
               onClick={() => onQuickConnect(profile)}
               title="Quick Connect"
-              className="rounded p-1.5 text-blue-600 transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
+              className="p-2 rounded-lg bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:scale-110 active:scale-95 hover:bg-blue-700"
             >
               <Play className="h-4 w-4 fill-current" />
             </button>
@@ -131,12 +131,12 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 w-1/3 rounded bg-muted"></div>
-          <div className="space-y-2">
-            <div className="h-12 rounded bg-muted/50"></div>
-            <div className="h-12 rounded bg-muted/50"></div>
+      <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl animate-pulse">
+        <div className="space-y-6">
+          <div className="h-4 w-1/3 rounded-lg bg-slate-200 dark:bg-slate-800"></div>
+          <div className="space-y-3">
+            <div className="h-16 rounded-xl bg-slate-200/50 dark:bg-slate-800/50"></div>
+            <div className="h-16 rounded-xl bg-slate-200/50 dark:bg-slate-800/50"></div>
           </div>
         </div>
       </div>
@@ -144,47 +144,55 @@ export function SessionsPanel({ onSelectProfile, onQuickConnect, selectedProfile
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-      {/* Pinned Sessions */}
-      {pinnedProfiles.length > 0 && (
-        <div className="border-b border-border p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <Star className="h-5 w-5 text-yellow-500" />
-            <h3 className="font-semibold text-foreground">Pinned</h3>
+    <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-8 border border-slate-200/60 dark:border-slate-800/50 shadow-sm backdrop-blur-sm">
+      <div className="space-y-10">
+        {/* Pinned Sessions */}
+        {pinnedProfiles.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 px-1">
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+              <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pinned Connections</h3>
+            </div>
+            <div className="grid gap-2">
+              {pinnedProfiles.map((profile) => (
+                <ProfileCard key={profile.id} profile={profile} />
+              ))}
+            </div>
           </div>
-          <div className="space-y-2">
-            {pinnedProfiles.map((profile) => (
-              <ProfileCard key={profile.id} profile={profile} />
-            ))}
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Saved Connections */}
-      {otherProfiles.length > 0 && (
-        <div className="p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <Database className="h-5 w-5 text-muted-foreground" />
-            <h3 className="font-semibold text-foreground">Saved Connections</h3>
-          </div>
-          <div className="space-y-2">
-            {otherProfiles.map((profile) => (
-              <ProfileCard key={profile.id} profile={profile} />
-            ))}
-          </div>
-        </div>
-      )}
+        {pinnedProfiles.length > 0 && otherProfiles.length > 0 && (
+          <div className="-my-2 h-px bg-slate-100 dark:bg-slate-800/50 mx-1" />
+        )}
 
-      {/* Empty State */}
-      {profiles.length === 0 && (
-        <div className="p-8 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-            <Clock className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+        {/* Saved Connections */}
+        {otherProfiles.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 px-1">
+              <Database className="h-4 w-4 text-slate-400" />
+              <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Saved Profiles</h3>
+            </div>
+            <div className="grid gap-2">
+              {otherProfiles.map((profile) => (
+                <ProfileCard key={profile.id} profile={profile} />
+              ))}
+            </div>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">No saved connections yet</p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-600">Connect to a database to save your session</p>
-        </div>
-      )}
+        )}
+
+        {/* Empty State */}
+        {profiles.length === 0 && (
+          <div className="py-12 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+              <Clock className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">No connections yet</h4>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-[240px] mx-auto">
+              Your saved database profiles will appear here for quick access.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
