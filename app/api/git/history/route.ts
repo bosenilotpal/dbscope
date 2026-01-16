@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import util from 'util';
 
-const execPromise = util.promisify(exec);
+// GitHub repository info
+const GITHUB_OWNER = 'bosenilotpal';
+const GITHUB_REPO = 'dbscope';
+
+interface GitHubCommit {
+  commit: {
+    author: {
+      date: string;
+    };
+  };
+}
 
 // Generate empty year data as fallback
 function generateEmptyYearData() {
@@ -22,25 +30,73 @@ function generateEmptyYearData() {
   return result;
 }
 
-export async function GET() {
-  try {
-    // Check if we're in a serverless environment (no git available)
-    const isServerless = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
+async function fetchAllCommits(): Promise<string[]> {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const sinceDate = oneYearAgo.toISOString();
 
-    if (isServerless) {
-      // Return empty data in serverless environments
-      return NextResponse.json(generateEmptyYearData());
+  const allDates: string[] = [];
+  let page = 1;
+  const perPage = 100;
+
+  // Prepare headers
+  const headers: HeadersInit = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'DBscope-App',
+  };
+
+  // Use GitHub token if available (for higher rate limits)
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
+  }
+
+  while (true) {
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits?since=${sinceDate}&per_page=${perPage}&page=${page}`;
+
+    const response = await fetch(url, {
+      headers,
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      console.error(`GitHub API error: ${response.status} ${response.statusText}`);
+      break;
     }
 
-    // Get commit dates from git log
-    const { stdout } = await execPromise('git log --pretty=format:"%aI"');
+    const commits: GitHubCommit[] = await response.json();
 
-    const commits = stdout.split('\n').filter(Boolean);
+    if (commits.length === 0) {
+      break;
+    }
+
+    commits.forEach(commit => {
+      const date = commit.commit.author.date.split('T')[0];
+      allDates.push(date);
+    });
+
+    // If we got fewer than per_page, we've reached the end
+    if (commits.length < perPage) {
+      break;
+    }
+
+    page++;
+
+    // Safety limit to prevent infinite loops
+    if (page > 20) {
+      break;
+    }
+  }
+
+  return allDates;
+}
+
+export async function GET() {
+  try {
+    const commitDates = await fetchAllCommits();
+
+    // Build activity map
     const activityMap: Record<string, number> = {};
-
-    commits.forEach(dateStr => {
-      // Extract YYYY-MM-DD
-      const date = dateStr.split('T')[0];
+    commitDates.forEach(date => {
       activityMap[date] = (activityMap[date] || 0) + 1;
     });
 
@@ -61,8 +117,8 @@ export async function GET() {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching git history:', error);
-    // Return empty year data instead of error object to prevent client-side crashes
+    console.error('Error fetching git history from GitHub:', error);
+    // Return empty year data to prevent client-side crashes
     return NextResponse.json(generateEmptyYearData());
   }
 }
