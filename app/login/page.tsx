@@ -44,20 +44,20 @@ function LoginForm() {
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col">
+        <div className="min-h-screen bg-white dark:bg-black flex flex-col">
             {/* Header */}
-            <header className="fixed top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
+            <header className="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-md">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/" className="flex items-center gap-2">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
                             <Database className="h-6 w-6 text-white" />
                         </div>
-                        <span className="text-xl font-bold text-slate-900">DBscope</span>
+                        <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
                     </Link>
                     <nav className="flex items-center gap-6">
                         <Link
                             href="/"
-                            className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
+                            className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white"
                         >
                             Back to Home
                         </Link>
@@ -70,18 +70,18 @@ function LoginForm() {
                 <div className="mx-auto w-full max-w-md">
                     {/* Title Section */}
                     <div className="text-center mb-8">
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm text-blue-700">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 px-4 py-1.5 text-sm text-blue-700 dark:text-blue-300">
                             <div className="h-2 w-2 rounded-full bg-blue-600"></div>
                             Secure Authentication
                         </div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
-                        <p className="text-slate-500 text-sm">Sign in to access your database connections</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Welcome Back</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">Sign in to access your database connections</p>
                     </div>
 
                     {/* Login Card */}
-                    <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/50">
+                    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl shadow-slate-200/50 dark:shadow-black/50">
                         {error && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center gap-3">
+                            <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 border border-red-100 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 text-sm flex items-center gap-3">
                                 <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                                 <span className="font-medium">{error}</span>
                             </div>
@@ -89,7 +89,7 @@ function LoginForm() {
 
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">
                                     Username
                                 </label>
                                 <div className="relative group">
@@ -98,7 +98,7 @@ function LoginForm() {
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                                         placeholder="Enter your username"
                                         required
                                         autoFocus
@@ -107,7 +107,7 @@ function LoginForm() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">
                                     Password
                                 </label>
                                 <div className="relative group">
@@ -116,7 +116,7 @@ function LoginForm() {
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                                         placeholder="Enter your password"
                                         required
                                     />
@@ -141,16 +141,16 @@ function LoginForm() {
 
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-slate-100"></div>
+                                <div className="w-full border-t border-slate-100 dark:border-slate-800"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-white px-4 text-slate-400 font-bold tracking-widest">Or continue with</span>
+                                <span className="bg-white dark:bg-slate-900 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-widest">Or continue with</span>
                             </div>
                         </div>
 
                         <button
                             type="button"
-                            className="w-full inline-flex items-center justify-center gap-3 py-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl transition-all shadow-sm active:scale-[0.98] group"
+                            className="w-full inline-flex items-center justify-center gap-3 py-3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold rounded-xl transition-all shadow-sm active:scale-[0.98] group"
                         >
                             <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
                                 <path
@@ -177,12 +177,12 @@ function LoginForm() {
             </div>
 
             {/* Footer */}
-            <footer className="border-t py-12 bg-white">
+            <footer className="border-t border-slate-200 dark:border-slate-800 py-12 bg-white dark:bg-black">
                 <div className="container mx-auto px-4 text-center">
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">
                         DBscope
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         Built by developers, for developers • Open source under MIT License
                     </p>
                 </div>
@@ -194,7 +194,7 @@ function LoginForm() {
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
                 <div className="h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
             </div>
         }>

@@ -99,9 +99,9 @@ export default function ViewerContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-black dark:to-black">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex-shrink-0 shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+      <header className="bg-white/80 dark:bg-black/80 backdrop-blur-xl flex-shrink-0 shadow-sm shadow-slate-200/50 dark:shadow-black/50 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <ArrowLeft className="h-4 w-4 text-slate-600 dark:text-slate-400" />
@@ -120,8 +120,8 @@ export default function ViewerContent() {
       {/* Main Content - 3 Column Layout */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Schema Explorer */}
-        <aside className="w-72 bg-white dark:bg-slate-900 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-slate-700">
-          <div className="px-4 py-3.5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
+        <aside className="w-72 bg-white dark:bg-black flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-slate-800">
+          <div className="px-4 py-3.5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-black border-b border-slate-200 dark:border-slate-800">
             <h2 className="font-semibold text-sm flex items-center gap-2 text-slate-900 dark:text-white">
               <Database className="h-4 w-4 text-blue-600" />
               Schema Explorer
@@ -144,17 +144,17 @@ export default function ViewerContent() {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-hidden p-4 bg-gradient-to-br from-slate-50/50 to-white">
+          <div className="flex-1 overflow-hidden p-4 bg-gradient-to-br from-slate-50/50 to-white dark:from-black dark:to-black">
             {error ? (
               <div className="h-full flex items-center justify-center">
-                <div className="max-w-2xl w-full p-6 bg-red-50 rounded-2xl shadow-lg shadow-red-100/50">
+                <div className="max-w-2xl w-full p-6 bg-red-50 dark:bg-red-950/50 rounded-2xl shadow-lg shadow-red-100/50 dark:shadow-black/50 dark:border dark:border-red-900/50">
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
                       <span className="text-red-600 font-bold">!</span>
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-red-800 mb-2">Query Error</h3>
-                      <pre className="text-sm text-red-700 code-font whitespace-pre-wrap break-words">{error}</pre>
+                      <h3 className="font-semibold text-red-800 dark:text-red-300 mb-2">Query Error</h3>
+                      <pre className="text-sm text-red-700 dark:text-red-400 code-font whitespace-pre-wrap break-words">{error}</pre>
                     </div>
                   </div>
                 </div>
@@ -163,11 +163,11 @@ export default function ViewerContent() {
               <div className="h-full flex items-center justify-center">
                 <div className="text-center">
                   <div className="relative w-16 h-16 mx-auto mb-4">
-                    <div className="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-blue-200 dark:border-blue-900 rounded-full"></div>
                     <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <p className="text-sm font-medium text-slate-700">Executing query...</p>
-                  <p className="text-xs text-slate-500 mt-1">Please wait</p>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Executing query...</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Please wait</p>
                 </div>
               </div>
             ) : queryResults ? (
@@ -182,12 +182,12 @@ export default function ViewerContent() {
             ) : (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center max-w-md">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/50">
-                    <Code className="h-10 w-10 text-blue-600" />
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-blue-900 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20">
+                    <Code className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-700 mb-2">Ready to Execute</h3>
-                  <p className="text-sm text-slate-600 mb-1">Write your CQL query above and execute it</p>
-                  <p className="text-xs text-slate-500 code-font bg-slate-100 inline-block px-3 py-1 rounded-full mt-2">
+                  <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Ready to Execute</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Write your CQL query above and execute it</p>
+                  <p className="text-xs text-slate-500 code-font bg-slate-100 dark:bg-slate-800 dark:text-slate-400 inline-block px-3 py-1 rounded-full mt-2">
                     Ctrl+Enter or click Execute
                   </p>
                 </div>

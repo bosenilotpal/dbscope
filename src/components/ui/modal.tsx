@@ -64,31 +64,31 @@ export function Modal({
             {/* Modal Content */}
             <div
                 className={cn(
-                    "relative w-full bg-white rounded-2xl shadow-2xl shadow-slate-900/20 overflow-hidden transition-all animate-in zoom-in-95 slide-in-from-bottom-2 duration-300",
+                    "relative w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-black/50 overflow-hidden transition-all animate-in zoom-in-95 slide-in-from-bottom-2 duration-300",
                     maxWidthClasses[maxWidth],
                     className
                 )}
             >
                 {/* Header */}
-                <div className="px-6 py-5 flex items-center justify-between bg-gradient-to-r from-slate-50/80 to-white">
+                <div className="px-6 py-5 flex items-center justify-between bg-gradient-to-r from-slate-50/80 to-white dark:from-slate-800/80 dark:to-slate-900">
                     <div>
                         {title && (
-                            <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
                         )}
                         {description && (
-                            <p className="text-sm text-slate-500 mt-0.5">{description}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>
                         )}
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl hover:bg-slate-100 transition-all duration-200 text-slate-400 hover:text-slate-600 hover:scale-105"
+                        className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:scale-105"
                     >
                         <X className="h-5 w-5" />
                     </button>
                 </div>
 
                 {/* Subtle separator */}
-                <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
 
                 {/* Content */}
                 <div className="p-6 max-h-[85vh] overflow-y-auto">

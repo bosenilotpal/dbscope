@@ -85,17 +85,17 @@ export function UserProfile() {
                 top: dropdownPosition.top,
                 right: dropdownPosition.right,
             }}
-            className="w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-[99999] animate-in fade-in zoom-in-95 duration-200"
+            className="w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 z-[99999] animate-in fade-in zoom-in-95 duration-200"
         >
-            <div className="px-4 py-2 border-b border-slate-100 mb-1">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Account</p>
+            <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Account</p>
             </div>
             <button
                 onClick={() => {
                     setIsOpen(false);
                     router.push('/settings');
                 }}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium"
             >
                 <Settings className="h-4 w-4" />
                 Account Settings
@@ -105,7 +105,7 @@ export function UserProfile() {
                     setIsOpen(false);
                     setIsConfirmOpen(true);
                 }}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors font-medium"
             >
                 <LogOut className="h-4 w-4" />
                 Logout
@@ -118,14 +118,14 @@ export function UserProfile() {
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200 group"
+                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
             >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-sm group-hover:shadow transition-shadow">
                     <User className="h-4 w-4" />
                 </div>
                 <div className="hidden sm:flex flex-col items-start leading-tight">
-                    <span className="text-sm font-bold text-slate-900 leading-none">{user.username}</span>
-                    <span className="text-[10px] text-slate-500 font-medium">Administrator</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">{user.username}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Administrator</span>
                 </div>
                 <ChevronDown className={cn("h-3 w-3 text-slate-400 transition-transform duration-200", isOpen && "rotate-180")} />
             </button>
@@ -140,16 +140,16 @@ export function UserProfile() {
                 maxWidth="sm"
             >
                 <div className="flex flex-col items-center text-center py-2">
-                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 bg-red-50 dark:bg-red-950/50 rounded-full flex items-center justify-center mb-4">
                         <AlertTriangle className="h-8 w-8 text-red-600" />
                     </div>
-                    <p className="text-slate-600 mb-8 max-w-[280px]">
+                    <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-[280px]">
                         Any unsaved progress or active database connections might be interrupted.
                     </p>
                     <div className="flex gap-3 w-full">
                         <button
                             onClick={() => setIsConfirmOpen(false)}
-                            className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                            className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                         >
                             Cancel
                         </button>

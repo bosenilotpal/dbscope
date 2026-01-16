@@ -189,7 +189,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-black dark:to-black">
       {/* Header */}
       <header className="fixed top-0 z-50 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -237,13 +237,13 @@ export default function HomePage() {
       <section className="container mx-auto px-4 pt-32 pb-20">
         <div className="mx-auto max-w-4xl text-center">
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-violet-50 px-4 py-1.5 text-sm text-blue-700 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 px-4 py-1.5 text-sm text-blue-700 dark:text-blue-300 shadow-sm">
             <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 animate-pulse"></div>
             Open Source • Secure • Production Ready
           </div>
 
           {/* Heading */}
-          <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
+          <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white md:text-6xl lg:text-7xl">
             The Modern UI for
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-blue-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
@@ -252,7 +252,7 @@ export default function HomePage() {
           </h1>
 
           {/* Subheading */}
-          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-slate-600 md:text-xl">
+          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400 md:text-xl">
             A unified, beautiful interface to connect, explore, and query your NoSQL databases.
             Built with Next.js, Docker-ready, and designed for developer productivity.
           </p>
@@ -312,7 +312,7 @@ export default function HomePage() {
               href="https://github.com/bosenilotpal/dbscope"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 font-semibold text-slate-700 shadow-lg shadow-slate-200/50 transition-all hover:shadow-xl hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-8 py-4 font-semibold text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-200/50 dark:shadow-black/50 transition-all hover:shadow-xl hover:scale-[1.02] dark:border dark:border-slate-800"
             >
               <Github className="h-5 w-5" />
               Star on GitHub
@@ -322,11 +322,11 @@ export default function HomePage() {
       </section>
 
       {/* Database Adapters Section */}
-      <section id="adapters" className="py-20 bg-gradient-to-b from-white to-slate-50/50">
+      <section id="adapters" className="py-20 bg-gradient-to-b from-white to-slate-50/50 dark:from-black dark:to-black">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
-            <h2 className="mb-3 text-3xl font-bold text-slate-900">Supported Database Adapters</h2>
-            <p className="text-slate-600 max-w-xl mx-auto">
+            <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">Supported Database Adapters</h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
               Connect to your favorite NoSQL databases with native drivers and optimized performance
             </p>
           </div>
@@ -336,8 +336,8 @@ export default function HomePage() {
               <div
                 key={adapter.name}
                 className={`group relative rounded-2xl p-6 transition-all duration-300 ${adapter.status === 'active'
-                  ? 'bg-white shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1'
-                  : 'bg-slate-50/50 opacity-75 hover:opacity-100'
+                  ? 'bg-white dark:bg-slate-900 shadow-lg shadow-slate-200/50 dark:shadow-black/50 hover:shadow-xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10 hover:-translate-y-1 dark:border dark:border-slate-800'
+                  : 'bg-slate-50/50 dark:bg-slate-900/50 opacity-75 hover:opacity-100 dark:border dark:border-slate-800'
                   }`}
               >
                 {adapter.status === 'coming-soon' && (
@@ -347,8 +347,8 @@ export default function HomePage() {
                 )}
                 <div className="flex flex-col items-center text-center">
                   <div className={`mb-3 flex h-16 w-16 items-center justify-center rounded-xl ${adapter.status === 'active'
-                    ? 'bg-gradient-to-br from-slate-50 to-slate-100'
-                    : 'bg-slate-100'
+                    ? 'bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700'
+                    : 'bg-slate-100 dark:bg-slate-800'
                     } transition-transform group-hover:scale-110`}>
                     {adapter.icon ? (
                       <Image
@@ -362,8 +362,8 @@ export default function HomePage() {
                       <Database className={`h-8 w-8 ${adapter.status === 'coming-soon' ? 'text-slate-400' : 'text-blue-600'}`} />
                     )}
                   </div>
-                  <h3 className="font-semibold text-slate-900">{adapter.name}</h3>
-                  <p className="mt-1 text-xs text-slate-500 leading-relaxed">{adapter.description}</p>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">{adapter.name}</h3>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{adapter.description}</p>
                 </div>
               </div>
             ))}
@@ -372,26 +372,26 @@ export default function HomePage() {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-20 bg-slate-50/50">
+      <section id="features" className="py-20 bg-slate-50/50 dark:bg-black">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
-            <h2 className="mb-3 text-3xl font-bold text-slate-900">Everything You Need</h2>
-            <p className="text-slate-600">Built for developers who demand both power and simplicity</p>
+            <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">Everything You Need</h2>
+            <p className="text-slate-600 dark:text-slate-400">Built for developers who demand both power and simplicity</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="group rounded-2xl bg-white p-6 shadow-lg shadow-slate-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1"
+                className="group rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-lg shadow-slate-200/50 dark:shadow-black/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 dark:border dark:border-slate-800"
               >
                 <div className="mb-4">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-violet-50 text-blue-600 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 text-blue-600 dark:text-blue-400 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25">
                     <feature.icon className="h-6 w-6" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-slate-900">{feature.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-600">{feature.description}</p>
+                <h3 className="mb-2 font-semibold text-slate-900 dark:text-white">{feature.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -399,11 +399,11 @@ export default function HomePage() {
       </section>
 
       {/* Tech Stack */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-black">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
-            <h3 className="mb-2 text-2xl font-bold text-slate-900">Built with Modern Tech</h3>
-            <p className="text-sm text-slate-600">Reliable, secure, and production-ready stack</p>
+            <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Built with Modern Tech</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Reliable, secure, and production-ready stack</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
             {techStack.map((tech) => (
@@ -412,7 +412,7 @@ export default function HomePage() {
                 href={tech.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-md shadow-slate-200/50 transition-all hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 hover:text-blue-600"
+                className="group inline-flex items-center gap-2.5 rounded-xl bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-md shadow-slate-200/50 dark:shadow-black/50 transition-all hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 hover:text-blue-600 dark:border dark:border-slate-800"
               >
                 <Image
                   src={tech.icon}
@@ -431,16 +431,16 @@ export default function HomePage() {
       </section>
 
       {/* Contributors Section */}
-      <section className="py-16 bg-gradient-to-b from-slate-50/50 to-white">
+      <section className="py-16 bg-gradient-to-b from-slate-50/50 to-white dark:from-black dark:to-black">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-8">
-            <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 p-4 shadow-lg shadow-blue-500/10">
-              <Users className="h-6 w-6 text-blue-600" />
+            <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 p-4 shadow-lg shadow-blue-500/10">
+              <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="mb-3 text-2xl font-bold text-slate-900">
+            <h3 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">
               Community Contributors
             </h3>
-            <p className="mx-auto max-w-2xl text-slate-600">
+            <p className="mx-auto max-w-2xl text-slate-600 dark:text-slate-400">
               Join our growing community of developers building the future of database management.
             </p>
           </div>
@@ -471,7 +471,7 @@ export default function HomePage() {
             href="https://github.com/bosenilotpal/dbscope"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-lg shadow-slate-200/50 transition-all hover:shadow-xl hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-lg shadow-slate-200/50 dark:shadow-black/50 transition-all hover:shadow-xl hover:scale-[1.02] dark:border dark:border-slate-800"
           >
             <Github className="h-4 w-4" />
             Become a Contributor
@@ -480,22 +480,22 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-white">
+      <footer className="py-8 bg-white dark:bg-black border-t border-slate-100 dark:border-slate-900">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-4 flex justify-center gap-6">
             <a
               href="https://github.com/bosenilotpal/dbscope"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 transition-all hover:text-slate-900 hover:scale-110"
+              className="text-slate-400 transition-all hover:text-slate-900 dark:hover:text-white hover:scale-110"
             >
               <Github className="h-5 w-5" />
             </a>
           </div>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             DBscope • Built by developers, for developers
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Open source under MIT License
           </p>
         </div>

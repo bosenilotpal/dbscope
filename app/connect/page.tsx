@@ -57,16 +57,16 @@ export default function ConnectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 dark:from-black dark:via-black dark:to-black">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5 dark:text-slate-400" />
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
               <Database className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">DBscope</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </Link>
           <div className="flex items-center gap-4">
             <button
@@ -76,7 +76,7 @@ export default function ConnectPage() {
               <Plus className="h-4 w-4" />
               New Connection
             </button>
-            <div className="h-6 w-px bg-slate-200" />
+            <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
             <UserProfile />
           </div>
         </div>
@@ -87,10 +87,10 @@ export default function ConnectPage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <h1 className="mb-2 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-4xl font-bold text-transparent">
+              <h1 className="mb-2 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-4xl font-bold text-transparent">
                 Connections
               </h1>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-400">
                 Manage your saved database profiles and sessions
               </p>
             </div>
@@ -109,24 +109,24 @@ export default function ConnectPage() {
 
             {/* Right: Quick Stats/Info (Optional but adds to UI richness) */}
             <aside className="space-y-6 hidden lg:block">
-              <div className="rounded-xl border bg-white/50 backdrop-blur-sm p-6">
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6">
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
                   <Database className="h-4 w-4 text-blue-600" />
                   Quick Info
                 </h3>
-                <div className="space-y-4 text-sm text-slate-600">
+                <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
                   <p>
                     Select an existing profile from the list to edit or connect.
                   </p>
                   <p>
                     Use the <strong>Quick Connect</strong> play button to join immediately.
                   </p>
-                  <div className="pt-4 border-t border-slate-200">
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="flex justify-between items-center mb-1">
                       <span>Saved Profiles</span>
-                      <span className="font-bold text-slate-900">Active</span>
+                      <span className="font-bold text-slate-900 dark:text-white">Active</span>
                     </div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-slate-400 dark:text-slate-500">
                       Profiles are stored securely in your local environment.
                     </div>
                   </div>

@@ -89,16 +89,16 @@ export default function SettingsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-black">
             {/* Header */}
-            <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
+            <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/connect" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-                        <ArrowLeft className="h-5 w-5" />
+                        <ArrowLeft className="h-5 w-5 dark:text-slate-400" />
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-lg shadow-blue-600/25">
                             <Database className="h-6 w-6 text-white" />
                         </div>
-                        <span className="text-xl font-bold text-slate-900">DBscope</span>
+                        <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
                     </Link>
                     <UserProfile />
                 </div>
@@ -107,8 +107,8 @@ export default function SettingsPage() {
             <main className="container mx-auto px-4 py-12">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-slate-900">Settings</h1>
-                        <p className="text-slate-600 mt-1">Manage your account and app preferences</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">Manage your account and app preferences</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
@@ -123,7 +123,7 @@ export default function SettingsPage() {
                                     }}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.id
                                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                        : 'text-slate-600 hover:bg-white hover:text-slate-900 border border-transparent hover:border-slate-200'
+                                        : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white border border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                                         }`}
                                 >
                                     <tab.icon className="h-4 w-4" />
@@ -133,7 +133,7 @@ export default function SettingsPage() {
                         </aside>
 
                         {/* Content Area */}
-                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                             <div className="p-8">
                                 {status && (
                                     <Alert variant={status.type === 'success' ? 'success' : 'destructive'} className="mb-6">
@@ -146,14 +146,14 @@ export default function SettingsPage() {
                                 {activeTab === 'profile' && (
                                     <div className="space-y-6">
                                         <div>
-                                            <h2 className="text-xl font-bold text-slate-900 border-b pb-4 mb-6">Profile Settings</h2>
-                                            <div className="flex items-center gap-6 mb-8 p-6 bg-slate-50 rounded-xl border border-slate-100">
+                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-4 mb-6">Profile Settings</h2>
+                                            <div className="flex items-center gap-6 mb-8 p-6 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
                                                 <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
                                                     {user?.username?.[0]?.toUpperCase() || 'U'}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Account Holder</p>
-                                                    <h3 className="text-2xl font-bold text-slate-900">{user?.username || 'Loading...'}</h3>
+                                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Account Holder</p>
+                                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{user?.username || 'Loading...'}</h3>
                                                     <div className="flex gap-2 mt-2">
                                                         <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase">Administrator</span>
                                                         <span className="px-2 py-0.5 bg-slate-200 text-slate-600 text-[10px] font-bold rounded uppercase">System Root</span>
@@ -163,14 +163,14 @@ export default function SettingsPage() {
 
                                             <div className="grid gap-4 max-w-md">
                                                 <div>
-                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Username</label>
+                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Username</label>
                                                     <input
                                                         type="text"
                                                         value={user?.username || ''}
                                                         disabled
-                                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-lg text-slate-500 font-medium opacity-75 cursor-not-allowed"
+                                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-400 font-medium opacity-75 cursor-not-allowed"
                                                     />
-                                                    <p className="text-[10px] text-slate-400 mt-1.5 ml-1">Username cannot be changed for system security reasons.</p>
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 ml-1">Username cannot be changed for system security reasons.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -180,16 +180,16 @@ export default function SettingsPage() {
                                 {activeTab === 'security' && (
                                     <div className="space-y-6">
                                         <div>
-                                            <h2 className="text-xl font-bold text-slate-900 border-b pb-4 mb-6">Security & Authentication</h2>
+                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-4 mb-6">Security & Authentication</h2>
                                             <form onSubmit={handlePasswordChange} className="max-w-md space-y-5">
                                                 <div className="relative">
-                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Current Password</label>
+                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Current Password</label>
                                                     <div className="relative">
                                                         <input
                                                             type={showCurrentPass ? "text" : "password"}
                                                             value={securityData.currentPassword}
                                                             onChange={(e) => setSecurityData({ ...securityData, currentPassword: e.target.value })}
-                                                            className="w-full pl-4 pr-10 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                            className="w-full pl-4 pr-10 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                                             placeholder="Enter current password"
                                                             required
                                                         />
@@ -204,13 +204,13 @@ export default function SettingsPage() {
                                                 </div>
 
                                                 <div className="relative">
-                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">New Password</label>
+                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">New Password</label>
                                                     <div className="relative">
                                                         <input
                                                             type={showNewPass ? "text" : "password"}
                                                             value={securityData.newPassword}
                                                             onChange={(e) => setSecurityData({ ...securityData, newPassword: e.target.value })}
-                                                            className="w-full pl-4 pr-10 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                            className="w-full pl-4 pr-10 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                                             placeholder="Enter new password"
                                                             required
                                                         />
@@ -225,12 +225,12 @@ export default function SettingsPage() {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Confirm New Password</label>
+                                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirm New Password</label>
                                                     <input
                                                         type="password"
                                                         value={securityData.confirmPassword}
                                                         onChange={(e) => setSecurityData({ ...securityData, confirmPassword: e.target.value })}
-                                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                                         placeholder="Confirm new password"
                                                         required
                                                     />
@@ -281,10 +281,10 @@ export default function SettingsPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-6 border border-slate-100 rounded-xl">
-                                                    <h4 className="font-bold text-slate-900 mb-2">Display Density</h4>
-                                                    <p className="text-sm text-slate-600 mb-4">Current setting: <span className="font-bold text-blue-600">Compact</span></p>
-                                                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="p-6 border border-slate-100 dark:border-slate-700 rounded-xl">
+                                                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Display Density</h4>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Current setting: <span className="font-bold text-blue-600">Compact</span></p>
+                                                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                                         <div className="h-full w-full bg-blue-600 rounded-full"></div>
                                                     </div>
                                                 </div>
