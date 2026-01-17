@@ -499,11 +499,15 @@ export default function HomePage() {
               <Github className="h-5 w-5" />
             </a>
           </div>
+          <div className="mb-4 flex justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+            <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">Terms of Service</Link>
+          </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">
             DBscope • Built by developers, for developers
           </p>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-            Open source under MIT License
+            © {new Date().getFullYear()} DBscope. Open source under MIT License
           </p>
         </div>
       </footer >

@@ -13,6 +13,27 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
+  openGraph: {
+    title: 'DBscope - Multi-Database NoSQL Viewer',
+    description: 'A unified, beautiful interface to connect, explore, and query your NoSQL databases. Built with Next.js, Docker-ready.',
+    url: 'https://dbscope.vercel.app',
+    siteName: 'DBscope',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'DBscope - Multi-Database NoSQL Viewer',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DBscope - Multi-Database NoSQL Viewer',
+    description: 'A unified, beautiful interface to connect, explore, and query your NoSQL databases.',
+    images: ['/og-image.png'],
+  },
 };
 
 // Script to apply theme before React hydrates to prevent flash
