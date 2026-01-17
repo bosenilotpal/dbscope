@@ -192,12 +192,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-black dark:to-black">
       {/* Header */}
-      <header className="fixed top-0 z-50 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-slate-900/50">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <header className="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-black/50">
+        <div className="w-full flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-blue-600/25">
-              <Image src="/logo.png" alt="DBscope" width={40} height={40} className="h-10 w-10" />
-            </div>
+            <Image src="/logo.jpg" alt="DBscope" width={44} height={44} className="h-11 w-11 rounded-xl" />
             <span className="text-xl font-bold text-slate-900 dark:text-white">DBscope</span>
           </div>
           <nav className="flex items-center gap-6">
