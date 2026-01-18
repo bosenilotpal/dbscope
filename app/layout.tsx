@@ -55,7 +55,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="antialiased bg-white dark:bg-black text-slate-900 dark:text-slate-100">
+      <body className="antialiased bg-white dark:bg-black text-slate-900 dark:text-slate-100 dot-pattern">
         <Providers>
           {children}
         </Providers>

@@ -7,7 +7,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-screen bg-white dark:bg-black">
+        <div className="min-h-screen">
             {/* Header */}
             <header className="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-xl">
                 <div className="w-full flex h-16 items-center justify-between px-6">

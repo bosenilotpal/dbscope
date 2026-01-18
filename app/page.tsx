@@ -190,7 +190,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-black dark:to-black">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-sm shadow-slate-200/50 dark:shadow-black/50">
         <div className="w-full flex h-16 items-center justify-between px-6">
@@ -322,7 +322,7 @@ export default function HomePage() {
       </section>
 
       {/* Database Adapters Section */}
-      <section id="adapters" className="py-20 bg-gradient-to-b from-white to-slate-50/50 dark:from-black dark:to-black">
+      <section id="adapters" className="py-20">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
             <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">Supported Database Adapters</h2>
@@ -372,7 +372,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-20 bg-slate-50/50 dark:bg-black">
+      <section id="features" className="py-20">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
             <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">Everything You Need</h2>
@@ -399,7 +399,7 @@ export default function HomePage() {
       </section>
 
       {/* Tech Stack */}
-      <section className="py-16 bg-white dark:bg-black">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
             <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Built with Modern Tech</h3>
@@ -431,7 +431,7 @@ export default function HomePage() {
       </section>
 
       {/* Contributors Section */}
-      <section className="py-16 bg-gradient-to-b from-slate-50/50 to-white dark:from-black dark:to-black">
+      <section className="py-16">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-8">
             <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/30 p-4 shadow-lg shadow-blue-500/10">
@@ -487,7 +487,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-white dark:bg-black border-t border-slate-100 dark:border-slate-900">
+      <footer className="py-8 border-t border-slate-100 dark:border-slate-900 bg-white dark:bg-black">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-4 flex justify-center gap-6">
             <a

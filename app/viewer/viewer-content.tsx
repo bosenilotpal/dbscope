@@ -100,7 +100,7 @@ export default function ViewerContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-black dark:to-black">
+    <div className="h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white/80 dark:bg-black/80 backdrop-blur-xl flex-shrink-0 shadow-sm shadow-slate-200/50 dark:shadow-black/50 border-b border-slate-200 dark:border-slate-800">
         <div className="w-full flex h-16 items-center justify-between px-6">
@@ -145,7 +145,7 @@ export default function ViewerContent() {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-hidden p-4 bg-gradient-to-br from-slate-50/50 to-white dark:from-black dark:to-black">
+          <div className="flex-1 overflow-hidden p-4">
             {error ? (
               <div className="h-full flex items-center justify-center">
                 <div className="max-w-2xl w-full p-6 bg-red-50 dark:bg-red-950/50 rounded-2xl shadow-lg shadow-red-100/50 dark:shadow-black/50 dark:border dark:border-red-900/50">

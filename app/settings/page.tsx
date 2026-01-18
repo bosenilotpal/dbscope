@@ -146,7 +146,7 @@ export default function SettingsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-black">
+        <div className="min-h-screen">
             {/* Header */}
             <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
                 <div className="w-full flex h-16 items-center justify-between px-6">

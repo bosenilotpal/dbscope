@@ -59,7 +59,7 @@ export default function ConnectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 dark:from-black dark:via-black dark:to-black">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="w-full flex h-16 items-center justify-between px-6">
@@ -109,7 +109,7 @@ export default function ConnectPage() {
 
             {/* Right: Quick Stats/Info (Optional but adds to UI richness) */}
             <aside className="space-y-6 hidden lg:block">
-              <div className="rounded-2xl bg-slate-50 dark:bg-slate-900/50 p-6">
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-900 p-6 dark:border dark:border-slate-800">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/10 border border-blue-600/20">
                     <Database className="h-4 w-4 text-blue-600" />
