@@ -75,6 +75,7 @@ export const adapterRegistry = new AdapterRegistry();
 
 // Auto-register adapters on import
 import { CassandraAdapter } from './cassandra/adapter';
+import { MongoDBAdapter } from './mongodb/adapter';
 
 // Register Apache Cassandra
 const cassandraAdapter = new CassandraAdapter();
@@ -95,6 +96,9 @@ const createScyllaDBAdapter = (): DatabaseAdapter => {
 
 adapterRegistry.register(createScyllaDBAdapter());
 
+// MongoDB adapter
+const mongoDBAdapter = new MongoDBAdapter();
+adapterRegistry.register(mongoDBAdapter);
+
 // Future: Add more adapters as they're implemented
-// adapterRegistry.register(new MongoDBAdapter());
 // adapterRegistry.register(new DynamoDBAdapter());

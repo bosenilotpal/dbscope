@@ -1,13 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  ColumnDef,
-} from '@tanstack/react-table';
-import { Download } from 'lucide-react';
+import { useState } from 'react';
+import { Download, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface ResultsTableProps {
   data: Record<string, unknown>[];
@@ -17,32 +11,47 @@ interface ResultsTableProps {
 }
 
 export function ResultsTable({ data, columns: columnDefs, executionTime, rowCount }: ResultsTableProps) {
-  const columns = useMemo<ColumnDef<Record<string, unknown>>[]>(() => {
-    return columnDefs.map(col => ({
-      accessorKey: col.name,
-      header: () => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-slate-900 dark:text-white">{col.name}</span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-normal code-font">{col.type}</span>
-        </div>
-      ),
-      cell: (info) => {
-        const value = info.getValue();
+  const [expandedDocs, setExpandedDocs] = useState<Record<number, boolean>>({});
+
+  const toggleDoc = (index: number) => {
+    setExpandedDocs(prev => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const renderValue = (value: unknown) => {
+    if (value === null) {
+      return (
+        <span className="code-font text-xs text-slate-400 dark:text-slate-500 italic">
+          null
+        </span>
+      );
+    }
+
+    if (typeof value === 'object') {
+      try {
+        const json = JSON.stringify(value, null, 2);
+        return (
+          <pre className="code-font text-[11px] leading-snug text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900/60 rounded-md px-2 py-1 max-h-40 overflow-auto border border-slate-200/80 dark:border-slate-800/80">
+            {json}
+          </pre>
+        );
+      } catch {
         return (
           <span className="code-font text-xs text-slate-700 dark:text-slate-300">
-            {value === null ? <span className="text-slate-400 dark:text-slate-500 italic">null</span> : String(value)}
+            [object]
           </span>
         );
-      },
-    }));
-  }, [columnDefs]);
+      }
+    }
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+    return (
+      <span className="code-font text-xs text-slate-700 dark:text-slate-300">
+        {String(value)}
+      </span>
+    );
+  };
 
   const downloadCSV = () => {
     const headers = columnDefs.map(c => c.name).join(',');
@@ -100,33 +109,58 @@ export function ResultsTable({ data, columns: columnDefs, executionTime, rowCoun
             No results
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50/80 dark:bg-slate-800/80 sticky top-0">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-2 text-left font-medium"
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800">
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="space-y-3 px-3 py-3 bg-slate-50/60 dark:bg-slate-950/40">
+            {data.map((row, index) => (
+              <div
+                key={index}
+                className="rounded-2xl border border-slate-100/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/80 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleDoc(index)}
+                  className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-900/60 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    {expandedDocs[index] ? (
+                      <ChevronDown className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                    ) : (
+                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                    )}
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+                      Document #{index + 1}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 code-font bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
+                      {Object.keys(row).length} fields
+                    </span>
+                  </div>
+                </button>
+
+                {expandedDocs[index] !== false && (
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {Object.entries(row).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex items-start gap-4 px-4 py-2.5"
+                      >
+                        <div className="w-40 shrink-0">
+                          <div className="inline-flex items-center gap-1 rounded-full bg-slate-50 dark:bg-slate-900/60 px-2.5 py-1">
+                            <span className="code-font text-[11px] font-semibold text-slate-800 dark:text-slate-100">
+                              {key}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {renderValue(value)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
