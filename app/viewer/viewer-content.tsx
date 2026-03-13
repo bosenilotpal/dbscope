@@ -26,6 +26,7 @@ export default function ViewerContent() {
   const [queryResults, setQueryResults] = useState<QueryResult | null>(null);
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ database: string; collection: string } | null>(null);
 
   if (!connectionId) {
     return (
@@ -99,6 +100,12 @@ export default function ViewerContent() {
     }
   };
 
+  const handleTableSelect = (database: string, collection: string) => {
+    setSelectedLocation({ database, collection });
+    const query = `SELECT * FROM ${database}.${collection} LIMIT 100;`;
+    executeQuery(query);
+  };
+
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
@@ -129,7 +136,7 @@ export default function ViewerContent() {
             </h2>
           </div>
           <div className="flex-1 overflow-auto p-3">
-            <SchemaTree connectionId={connectionId} />
+            <SchemaTree connectionId={connectionId} onTableSelect={handleTableSelect} />
           </div>
         </aside>
 
@@ -140,7 +147,11 @@ export default function ViewerContent() {
             <QueryEditor
               connectionId={connectionId}
               onExecute={executeQuery}
-              initialQuery="SELECT * FROM system.local LIMIT 10;"
+              initialQuery={
+                selectedLocation
+                  ? `SELECT * FROM ${selectedLocation.database}.${selectedLocation.collection} LIMIT 100;`
+                  : 'SELECT * FROM system.local LIMIT 10;'
+              }
             />
           </div>
 
