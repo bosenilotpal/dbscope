@@ -39,7 +39,8 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
     username: '',
     password: '',
     keyspace: '',
-    localDataCenter: 'datacenter1'
+    localDataCenter: 'datacenter1',
+    uri: ''
   });
 
   // Pre-fill form if profile is provided
@@ -51,7 +52,8 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
         username: profile.username || '',
         password: profile.password || '',
         keyspace: profile.keyspace || '',
-        localDataCenter: profile.local_data_center || 'datacenter1'
+        localDataCenter: profile.local_data_center || 'datacenter1',
+        uri: ''
       });
       setProfileName(profile.name || '');
       setSaveProfile(false); // Only check if user wants to explicitly update
@@ -376,6 +378,24 @@ export function ConnectionForm({ databaseType, profile, onProfileSaved, autoConn
             className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white"
           />
         </div>
+
+        {databaseType === 'mongodb' && (
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5">
+              Connection string (optional)
+            </label>
+            <input
+              type="text"
+              value={formData.uri}
+              onChange={(e) => setFormData({ ...formData, uri: e.target.value })}
+              placeholder="mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority"
+              className="w-full px-4 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent focus:border-blue-600/50 dark:focus:border-blue-500/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-600/10 dark:focus:ring-blue-500/10 transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs"
+            />
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              If provided, this URI will be used instead of the host/port settings above. Paste your full Atlas connection string here.
+            </p>
+          </div>
+        )}
 
         {(databaseType === 'cassandra' || databaseType === 'scylladb') && (
           <>
